@@ -1,0 +1,108 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1>Регистрация в TrackHub</h1>
+
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="success-message">
+        {{ successMessage }}
+      </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Имя пользователя</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="Введите имя пользователя (только латиница и цифры)"
+          [class.error]="registerForm.get('username')?.touched && registerForm.get('username')?.invalid"
+        />
+        @if (registerForm.get('username')?.touched && registerForm.get('username')?.errors?.['required']) {
+          <small class="error-text">Имя пользователя обязательно</small>
+        }
+        @if (registerForm.get('username')?.touched && registerForm.get('username')?.errors?.['minlength']) {
+          <small class="error-text">Минимум 3 символа</small>
+        }
+        @if (registerForm.get('username')?.touched && registerForm.get('username')?.errors?.['pattern']) {
+          <small class="error-text">Только латиница и цифры</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="Введите ваш email"
+          [class.error]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+        />
+        @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']) {
+          <small class="error-text">Email обязателен</small>
+        }
+        @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['email']) {
+          <small class="error-text">Введите корректный email</small>
+        }
+        @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['maxlength']) {
+          <small class="error-text">Максимум 100 символов</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Минимум 8 символов, 1 заглавная, 1 цифра, 1 спецсимвол"
+          [class.error]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
+        />
+        @if (registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required']) {
+          <small class="error-text">Пароль обязателен</small>
+        }
+        @if (registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['minlength']) {
+          <small class="error-text">Минимум 8 символов</small>
+        }
+        @if (registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['pattern']) {
+          <small class="error-text">Пароль должен содержать: 1 заглавную, 1 цифру, 1 спецсимвол (&#64;$!%*?&)</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Подтверждение пароля</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="Повторите пароль"
+          [class.error]="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid"
+        />
+        @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']) {
+          <small class="error-text">Подтверждение пароля обязательно</small>
+        }
+        @if (registerForm.errors?.['passwordMismatch']) {
+          <small class="error-text">Пароли не совпадают</small>
+        }
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid || loading" class="btn-primary">
+        @if (loading) {
+          <span>Регистрация...</span>
+        } @else {
+          <span>Зарегистрироваться</span>
+        }
+      </button>
+    </form>
+
+    <div class="login-link">
+      <p>Уже есть аккаунт? <a (click)="goToLogin()">Войти</a></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+<div class="admin-panel-container">
+  <div class="page-header">
+    <h1>Админ-панель</h1>
+    <p class="page-description">Управление пользователями системы</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Загрузка пользователей...</p>
+  </div>
+
+  <div *ngIf="!loading" class="users-table-container">
+    <div class="table-header">
+      <div class="table-info">
+        <span class="total-users">Всего пользователей: {{ totalElements }}</span>
+      </div>
+    </div>
+
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Имя пользователя</th>
+          <th>Роль</th>
+          <th>Статус</th>
+          <th>Дата создания</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" [class.disabled-row]="!user.enabled">
+          <td class="user-id">{{ user.id }}</td>
+          <td class="user-username">{{ user.username }}</td>
+          <td class="user-role">
+            <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+              {{ user.role }}
+            </span>
+          </td>
+          <td class="user-status">
+            <span class="status-badge" [class.status-active]="user.enabled" [class.status-disabled]="!user.enabled">
+              {{ user.enabled ? 'Активен' : 'Заблокирован' }}
+            </span>
+          </td>
+          <td class="user-created">{{ formatDate(user.createdAt) }}</td>
+          <td class="user-actions">
+            <button class="btn-action btn-role" (click)="openRoleDialog(user)" title="Изменить роль">
+              <span class="btn-icon">👤</span>
+            </button>
+            <button class="btn-action btn-lock" (click)="toggleUserLock(user)" [title]="user.enabled ? 'Заблокировать' : 'Разблокировать'">
+              <span class="btn-icon">{{ user.enabled ? '🔒' : '🔓' }}</span>
+            </button>
+            <button class="btn-action btn-delete" (click)="deleteUser(user)" title="Удалить">
+              <span class="btn-icon">🗑️</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button
+        class="pagination-btn"
+        (click)="onPageChange(page - 1)"
+        [disabled]="page === 0">
+        ← Назад
+      </button>
+
+      <div class="pagination-info">
+        Страница {{ page + 1 }} из {{ totalPages }}
+      </div>
+
+      <button
+        class="pagination-btn"
+        (click)="onPageChange(page + 1)"
+        [disabled]="page >= totalPages - 1">
+        Вперёд →
+      </button>
+    </div>
+  </div>
+
+  <!-- Диалог изменения роли -->
+  <div *ngIf="showRoleDialog" class="dialog-overlay" (click)="closeRoleDialog()">
+    <div class="dialog" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Изменить роль пользователя</h2>
+        <button class="dialog-close" (click)="closeRoleDialog()">✕</button>
+      </div>
+
+      <div class="dialog-body">
+        <div *ngIf="roleError" class="error-message">
+          {{ roleError }}
+        </div>
+
+        <div class="user-info">
+          <p><strong>Пользователь:</strong> {{ roleUser?.username }}</p>
+          <p><strong>Текущая роль:</strong> {{ roleUser?.role }}</p>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Новая роль:</label>
+          <select id="role" [(ngModel)]="roleForm.role">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn-secondary" (click)="closeRoleDialog()">Отмена</button>
+        <button
+          class="btn-primary"
+          (click)="changeUserRole()"
+          [disabled]="roleLoading">
+          {{ roleLoading ? 'Сохранение...' : 'Сохранить' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

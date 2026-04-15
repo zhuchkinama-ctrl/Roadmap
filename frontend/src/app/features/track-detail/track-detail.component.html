@@ -1,0 +1,285 @@
+<div class="track-detail-container">
+  @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Загрузка...</p>
+    </div>
+  } @else if (track) {
+    <div class="track-header">
+      <div class="track-info">
+        <h1 class="track-title">{{ track.title }}</h1>
+        @if (track.description) {
+          <p class="track-description">{{ track.description }}</p>
+        }
+        <div class="track-meta">
+          <span class="track-owner">👤 {{ track.owner.username }}</span>
+          <span class="track-role-badge" [ngClass]="getRoleBadgeClass(track.myRole)">
+            {{ getRoleLabel(track.myRole) }}
+          </span>
+          <span class="track-date">📅 {{ formatDate(track.updatedAt) }}</span>
+        </div>
+      </div>
+
+      <div class="track-actions">
+        @if (canShare()) {
+          <button class="btn-secondary" (click)="openShareDialog()">
+            <span>Поделиться</span>
+          </button>
+        }
+        @if (canDelete()) {
+          <button class="btn-danger" (click)="deleteTrack()">
+            <span>Удалить</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="track-content">
+      <div class="notes-panel">
+        <div class="panel-header">
+          <h2>Заметки</h2>
+          @if (canEdit()) {
+            <button class="btn-primary btn-sm" (click)="openCreateDialog()">
+              <span class="btn-icon">➕</span>
+              <span>Добавить</span>
+            </button>
+          }
+        </div>
+
+        @if (notes.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <p>Нет заметок</p>
+            @if (canEdit()) {
+              <button class="btn-primary btn-sm" (click)="openCreateDialog()">
+                Создать заметку
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="notes-tree">
+            <ng-container *ngTemplateOutlet="noteTree; context: { $implicit: notes, level: 0 }"></ng-container>
+          </div>
+        }
+      </div>
+
+      <div class="note-editor-panel">
+        @if (selectedNote) {
+          <div class="note-editor">
+            <div class="editor-header">
+              <h2>{{ editMode ? 'Редактирование' : 'Просмотр' }}</h2>
+              @if (canEdit()) {
+                <div class="editor-actions">
+                  @if (!editMode) {
+                    <button class="btn-primary btn-sm" (click)="startEdit()">
+                      <span class="btn-icon">✏️</span>
+                      <span>Редактировать</span>
+                    </button>
+                  } @else {
+                    <button class="btn-secondary btn-sm" (click)="cancelEdit()">Отмена</button>
+                    <button
+                      class="btn-primary btn-sm"
+                      (click)="saveNote()"
+                      [disabled]="editLoading"
+                    >
+                      @if (editLoading) {
+                        <span>Сохранение...</span>
+                      } @else {
+                        <span>Сохранить</span>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (editError) {
+              <div class="error-message">{{ editError }}</div>
+            }
+
+            <div class="editor-body">
+              @if (editMode) {
+                <div class="form-group">
+                  <label for="noteTitle">Название *</label>
+                  <input
+                    id="noteTitle"
+                    type="text"
+                    [(ngModel)]="editForm.title"
+                    placeholder="Введите название заметки"
+                    maxlength="200"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="noteContent">Содержимое</label>
+                  <textarea
+                    id="noteContent"
+                    [(ngModel)]="editForm.content"
+                    placeholder="Введите содержимое заметки"
+                    rows="15"
+                  ></textarea>
+                </div>
+              } @else {
+                <div class="note-view">
+                  <h3 class="note-view-title">{{ selectedNote.title }}</h3>
+                  <div class="note-view-content">
+                    @if (selectedNote.content) {
+                      <p>{{ selectedNote.content }}</p>
+                    } @else {
+                      <p class="empty-content">Нет содержимого</p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (canEdit()) {
+              <div class="editor-footer">
+                <button class="btn-secondary btn-sm" (click)="openCreateDialog(selectedNote.id)">
+                  <span class="btn-icon">➕</span>
+                  <span>Добавить дочернюю</span>
+                </button>
+                <button class="btn-danger btn-sm" (click)="deleteNote(selectedNote.id)">
+                        <span>Удалить</span>
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-editor">
+            <div class="empty-icon">📝</div>
+            <h3>Выберите заметку</h3>
+            <p>Нажмите на заметку слева для просмотра</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (showCreateDialog) {
+    <div class="dialog-overlay" (click)="closeCreateDialog()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h2>Создать заметку</h2>
+          <button class="dialog-close" (click)="closeCreateDialog()">✕</button>
+        </div>
+
+        <div class="dialog-body">
+          @if (createError) {
+            <div class="error-message">{{ createError }}</div>
+          }
+
+          <div class="form-group">
+            <label for="createNoteTitle">Название *</label>
+            <input
+              id="createNoteTitle"
+              type="text"
+              [(ngModel)]="createForm.title"
+              placeholder="Введите название заметки"
+              maxlength="200"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="createNoteContent">Содержимое</label>
+            <textarea
+              id="createNoteContent"
+              [(ngModel)]="createForm.content"
+              placeholder="Введите содержимое заметки (необязательно)"
+              rows="6"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <button class="btn-secondary" (click)="closeCreateDialog()">Отмена</button>
+          <button
+            class="btn-primary"
+            (click)="createNote()"
+            [disabled]="createLoading || !createForm.title.trim()"
+          >
+            @if (createLoading) {
+              <span>Создание...</span>
+            } @else {
+              <span>Создать</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showShareDialog) {
+    <div class="dialog-overlay" (click)="closeShareDialog()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h2>Поделиться треком</h2>
+          <button class="dialog-close" (click)="closeShareDialog()">✕</button>
+        </div>
+
+        <div class="dialog-body">
+          @if (shareError) {
+            <div class="error-message">{{ shareError }}</div>
+          }
+
+          <div class="form-group">
+            <label for="shareUsername">Имя пользователя *</label>
+            <input
+              id="shareUsername"
+              type="text"
+              [(ngModel)]="shareForm.username"
+              placeholder="Введите имя пользователя"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="sharePermission">Права доступа</label>
+            <select id="sharePermission" [(ngModel)]="shareForm.permissionType">
+              <option value="VIEW">Только просмотр</option>
+              <option value="EDIT">Редактирование</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <button class="btn-secondary" (click)="closeShareDialog()">Отмена</button>
+          <button
+            class="btn-primary"
+            (click)="shareTrack()"
+            [disabled]="shareLoading || !shareForm.username.trim()"
+          >
+            @if (shareLoading) {
+              <span>Предоставление...</span>
+            } @else {
+              <span>Поделиться</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<ng-template #noteTree let-notes let-level="level">
+  <ul class="note-list" [style.padding-left.px]="level * 20">
+    @for (note of notes; track note.id) {
+      <li class="note-item" [class.selected]="selectedNote?.id === note.id">
+        <div class="note-item-content" (click)="selectNote(note)">
+          <span class="note-icon">📄</span>
+          <span class="note-title">{{ note.title }}</span>
+          @if (note.children && note.children.length > 0) {
+            <span class="note-children-count">({{ note.children.length }})</span>
+          }
+        </div>
+        @if (note.children && note.children.length > 0) {
+          <ng-container *ngTemplateOutlet="noteTree; context: { $implicit: note.children, level: level + 1 }"></ng-container>
+        }
+      </li>
+    }
+  </ul>
+</ng-template>

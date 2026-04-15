@@ -1,0 +1,141 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Мои треки</h1>
+    <button class="btn-primary" (click)="openCreateDialog()">
+<span>Создать трек</span>
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="dashboard-content">
+    @if (loading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Загрузка треков...</p>
+      </div>
+    } @else if (tracks.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h2>Нет треков</h2>
+        <p>Создайте свой первый трек для начала работы</p>
+        <button class="btn-primary" (click)="openCreateDialog()">
+          Создать трек
+        </button>
+      </div>
+    } @else {
+      <div class="tracks-grid">
+        @for (track of tracks; track track.id) {
+          <div class="track-card" (click)="openTrack(track.id)">
+            <div class="track-header">
+              <h3 class="track-title">{{ track.title }}</h3>
+              <span class="track-role-badge" [ngClass]="getRoleBadgeClass(track.myRole)">
+                {{ getRoleLabel(track.myRole) }}
+              </span>
+            </div>
+
+            @if (track.description) {
+              <p class="track-description">{{ track.description }}</p>
+            }
+
+            <div class="track-footer">
+              <div class="track-info">
+                <span class="track-owner">👤 {{ track.owner.username }}</span>
+                <span class="track-date">📅 {{ formatDate(track.updatedAt) }}</span>
+              </div>
+
+              <div class="track-actions" (click)="$event.stopPropagation()">
+                @if (canDeleteTrack(track)) {
+                  <button class="btn-icon btn-delete" (click)="deleteTrack(track.id)" title="Удалить трек">
+                    🗑️
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <div class="pagination">
+          <button
+            class="pagination-btn"
+            [disabled]="page === 0"
+            (click)="onPageChange(page - 1)"
+          >
+            ← Назад
+          </button>
+
+          <span class="pagination-info">
+            Страница {{ page + 1 }} из {{ totalPages }}
+          </span>
+
+          <button
+            class="pagination-btn"
+            [disabled]="page >= totalPages - 1"
+            (click)="onPageChange(page + 1)"
+          >
+            Вперёд →
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  @if (showCreateDialog) {
+    <div class="dialog-overlay" (click)="closeCreateDialog()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h2>Создать новый трек</h2>
+          <button class="dialog-close" (click)="closeCreateDialog()">✕</button>
+        </div>
+
+        <div class="dialog-body">
+          @if (createError) {
+            <div class="error-message">{{ createError }}</div>
+          }
+
+          <div class="form-group">
+            <label for="trackTitle">Название *</label>
+            <input
+              id="trackTitle"
+              type="text"
+              [(ngModel)]="createForm.title"
+              placeholder="Введите название трека"
+              maxlength="200"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="trackDescription">Описание</label>
+            <textarea
+              id="trackDescription"
+              [(ngModel)]="createForm.description"
+              placeholder="Введите описание трека (необязательно)"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <button class="btn-secondary" (click)="closeCreateDialog()">Отмена</button>
+          <button
+            class="btn-primary"
+            (click)="createTrack()"
+            [disabled]="createLoading || !createForm.title.trim()"
+          >
+            @if (createLoading) {
+              <span>Создание...</span>
+            } @else {
+              <span>Создать</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

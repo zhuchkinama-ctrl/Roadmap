@@ -1,0 +1,62 @@
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          class="nav-link"
+          title="Мои треки"
+        >
+
+          <span class="nav-text">Мои треки</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [queryParams]="{ filter: 'shared' }"
+          class="nav-link"
+          title="Доступ мне"
+        >
+
+          <span class="nav-text">Доступ мне</span>
+        </a>
+      </li>
+
+      @if (isAdmin()) {
+        <li class="nav-item">
+          <a
+            routerLink="/admin"
+            routerLinkActive="active"
+            class="nav-link admin-link"
+            title="Админ-панель"
+          >
+
+            <span class="nav-text">Админ-панель</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    @if (currentUser$ | async; as user) {
+      <div class="user-info">
+        <div class="user-avatar">
+          <span class="avatar-text">{{ user.username.charAt(0).toUpperCase() }}</span>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ user.username }}</span>
+          <span class="user-role">{{ user.role }}</span>
+        </div>
+      </div>
+    }
+    <button class="logout-btn" (click)="logout()" title="Выйти">
+
+      <span class="logout-text">Выйти</span>
+    </button>
+  </div>
+</aside>

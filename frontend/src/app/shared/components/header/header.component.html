@@ -1,0 +1,26 @@
+<header class="app-header">
+  <div class="header-content">
+    <div class="logo">
+      <a routerLink="/dashboard">
+        <img src="assets/18574361.png"  class="logo-icon">
+        <span class="logo-text">TrackHub</span>
+      </a>
+    </div>
+
+    <div class="user-info">
+      @if (currentUser$ | async; as user) {
+        <div class="user-details">
+          <span class="username">{{ user.username }}</span>
+          @if (user.role === 'ADMIN') {
+            <span class="role-badge admin">ADMIN</span>
+          } @else {
+            <span class="role-badge user">USER</span>
+          }
+        </div>
+      }
+        <button class="logout-btn" (click)="logout()" title="Выйти">
+            <span class="logout-text">Выйти</span>
+        </button>
+    </div>
+  </div>
+</header>
