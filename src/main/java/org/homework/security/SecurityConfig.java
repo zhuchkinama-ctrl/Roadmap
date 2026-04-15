@@ -1,3 +1,7 @@
+// === CHUNK: SECURITY_CONFIG [SECURITY] ===
+// Описание: Конфигурация Spring Security с JWT аутентификацией.
+// Dependencies: Spring Security, Lombok
+
 package org.homework.security;
 
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +17,40 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// [START_SECURITY_CONFIG]
+/*
+ * ANCHOR: SECURITY_CONFIG
+ * PURPOSE: Конфигурация Spring Security с JWT аутентификацией.
+ *
+ * @PreConditions:
+ * - JwtAuthenticationFilter внедрён через DI
+ * - CustomUserDetailsService внедрён через DI
+ *
+ * @PostConditions:
+ * - SecurityFilterChain настроен с JWT фильтром
+ * - публичные эндпоинты (/api/v1/auth/**, /error) доступны без аутентификации
+ * - все остальные запросы требуют аутентификации
+ * - сессии stateless
+ *
+ * @Invariants:
+ * - CSRF отключён (токен-базированная аутентификация)
+ * - CORS настроен
+ * - JWT фильтр добавляется перед UsernamePasswordAuthenticationFilter
+ *
+ * @SideEffects:
+ * - настраивает цепочку фильтров безопасности
+ * - пишет логи в SLF4J
+ *
+ * @ForbiddenChanges:
+ * - нельзя включить CSRF без согласования
+ * - нельзя убрать JWT фильтр
+ * - нельзя сделать сессии stateful
+ *
+ * @AllowedRefactorZone:
+ * - можно изменить список публичных эндпоинтов
+ * - можно добавить дополнительные правила авторизации
+ * - можно изменить алгоритм хеширования паролей
+ */
 @Slf4j
 @Configuration
 public class SecurityConfig {
@@ -63,3 +101,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+// [END_SECURITY_CONFIG]
+// === END_CHUNK: SECURITY_CONFIG ===

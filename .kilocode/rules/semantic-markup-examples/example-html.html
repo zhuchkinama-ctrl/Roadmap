@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!-- Эталон: семантическая разметка в HTML (справочник). -->
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Семантические якоря в разметке</title>
+    <!--
+       LIFECYCLE_ANCHOR: OrderStates
+       STATES:
+         New -> Paid [trigger: pay()]
+         Paid -> Shipped [trigger: ship()]
+         Shipped -> Delivered [trigger: complete()]
+         Any -> Cancelled [trigger: cancel()]
+       END_LIFECYCLE_ANCHOR
+    -->
+  </head>
+  <body>
+    <!-- === EDITABLE SECTION START: OPTIONS_FORM_V1 === -->
+    <!-- Здесь разрешены правки полей формы настроек. -->
+    <form id="options-form">
+      <label>Пример</label>
+      <input type="text" name="example" />
+    </form>
+    <!-- == EDITABLE SECTION END == -->
+
+    <!-- ANCHOR: OPTIONS_SHELL (не менять разметку контейнера без согласования) -->
+    <footer></footer>
+  </body>
+</html>

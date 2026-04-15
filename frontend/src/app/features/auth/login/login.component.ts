@@ -1,3 +1,29 @@
+// [START_LOGIN_COMPONENT]
+/*
+ * ANCHOR: LOGIN_COMPONENT
+ * PURPOSE: Обеспечение входа пользователя в систему.
+ *
+ * @PreConditions:
+ * - AuthService доступен.
+ * - Форма валидна.
+ *
+ * @PostConditions:
+ * - При успешном входе пользователь перенаправлен на /dashboard.
+ *
+ * @Invariants:
+ * - loginForm всегда отражает текущие вводимые данные.
+ *
+ * @SideEffects:
+ * - Навигация при успешном входе.
+ *
+ * @ForbiddenChanges:
+ * - Нельзя менять процесс аутентификации без согласования.
+ *
+ * @AllowedRefactorZone:
+ * - Внутреннее оформление кода.
+ */
+// [END_LOGIN_COMPONENT]
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';

@@ -1,3 +1,29 @@
+// [START_ADMIN_GUARD]
+/*
+ * ANCHOR: ADMIN_GUARD
+ * PURPOSE: Защита маршрутов, доступных только администраторам.
+ *
+ * @PreConditions:
+ * - AuthService доступен.
+ * - Пользователь аутентифицирован.
+ *
+ * @PostConditions:
+ * - При отсутствии прав происходит редирект на /dashboard.
+ *
+ * @Invariants:
+ * - Возврат boolean указывает на статус доступа.
+ *
+ * @SideEffects:
+ * - Возможный навигационный переход.
+ *
+ * @ForbiddenChanges:
+ * - Нельзя менять логику редиректа без согласования.
+ *
+ * @AllowedRefactorZone:
+ * - Внутреннее оформление кода.
+ */
+// [END_ADMIN_GUARD]
+
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';

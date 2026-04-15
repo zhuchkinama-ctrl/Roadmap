@@ -1,3 +1,7 @@
+// === CHUNK: JWT_AUTHENTICATION_FILTER [SECURITY] ===
+// Описание: JWT фильтр аутентификации для Spring Security.
+// Dependencies: Spring Security, Servlet API, Lombok
+
 package org.homework.security;
 
 import jakarta.servlet.FilterChain;
@@ -13,8 +17,38 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-/**
- * JWT authentication filter.
+// [START_JWT_AUTHENTICATION_FILTER]
+/*
+ * ANCHOR: JWT_AUTHENTICATION_FILTER
+ * PURPOSE: JWT фильтр аутентификации для Spring Security.
+ *
+ * @PreConditions:
+ * - JwtTokenProvider внедрён через DI
+ * - Spring Security контекст доступен
+ *
+ * @PostConditions:
+ * - при валидном токене: пользователь аутентифицирован в SecurityContext
+ * - при отсутствии/невалидном токене: запрос продолжается без аутентификации
+ * - публичные эндпоинты пропускаются без проверки токена
+ *
+ * @Invariants:
+ * - фильтр выполняется один раз для каждого запроса (OncePerRequestFilter)
+ * - публичные эндпоинты (/api/v1/auth/) всегда пропускаются
+ * - токен проверяется только если заголовок Authorization начинается с "Bearer "
+ *
+ * @SideEffects:
+ * - устанавливает аутентификацию в SecurityContextHolder при валидном токене
+ * - пишет логи в SLF4J
+ *
+ * @ForbiddenChanges:
+ * - нельзя убрать пропуск публичных эндпоинтов
+ * - нельзя изменить формат токена (Bearer)
+ * - нельзя убрать установку аутентификации в SecurityContext
+ *
+ * @AllowedRefactorZone:
+ * - можно изменить список публичных эндпоинтов
+ * - можно добавить дополнительные проверки (например, проверку ролей)
+ * - можно изменить уровень логирования
  */
 @Slf4j
 @Component
@@ -66,3 +100,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+// [END_JWT_AUTHENTICATION_FILTER]
+// === END_CHUNK: JWT_AUTHENTICATION_FILTER ===

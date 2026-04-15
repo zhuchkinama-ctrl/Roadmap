@@ -1,3 +1,29 @@
+// [START_ADMIN_SERVICE]
+/*
+ * ANCHOR: ADMIN_SERVICE
+ * PURPOSE: Управление пользователями и их ролями (админские операции).
+ *
+ * @PreConditions:
+ * - environment.apiUrl определён.
+ * - Пользователь имеет роль ADMIN.
+ *
+ * @PostConditions:
+ * - Возвращаются Observable с результатом операции.
+ *
+ * @Invariants:
+ * - Все запросы проходят через HttpClient.
+ *
+ * @SideEffects:
+ * - HTTP запросы к /admin/* эндпоинтам.
+ *
+ * @ForbiddenChanges:
+ * - Нельзя менять URL без согласования.
+ *
+ * @AllowedRefactorZone:
+ * - Внутреннее оформление методов.
+ */
+// [END_ADMIN_SERVICE]
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';

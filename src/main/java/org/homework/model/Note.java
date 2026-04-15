@@ -1,3 +1,7 @@
+// === CHUNK: NOTE_ENTITY [MODEL] ===
+// Описание: JPA-сущность заметки в треке.
+// Dependencies: Jakarta Persistence, Lombok, Jackson
+
 package org.homework.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -5,6 +9,32 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
+// [START_NOTE_ENTITY]
+/*
+ * ANCHOR: NOTE_ENTITY
+ * PURPOSE: JPA-сущность заметки в треке.
+ *
+ * @PreConditions:
+ * - нет нетривиальных предусловий
+ *
+ * @PostConditions:
+ * - сущность готова к использованию с JPA
+ *
+ * @Invariants:
+ * - заметка всегда принадлежит треку (track)
+ * - parent может быть null (корневая заметка)
+ * - createdAt не обновляется после создания
+ *
+ * @SideEffects:
+ * - нет побочных эффектов
+ *
+ * @ForbiddenChanges:
+ * - нельзя сделать track nullable
+ * - нельзя убрать @JsonIgnore от track и parent
+ *
+ * @AllowedRefactorZone:
+ * - можно добавить дополнительные поля (например, color, tags)
+ */
 @Entity
 @Table(name = "notes")
 @Getter
@@ -42,3 +72,5 @@ public class Note {
     @Column(nullable = false)
     private Instant updatedAt = Instant.now();
 }
+// [END_NOTE_ENTITY]
+// === END_CHUNK: NOTE_ENTITY ===
