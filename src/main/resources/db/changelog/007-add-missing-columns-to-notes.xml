@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="007-add-missing-columns-to-notes" author="team@trackhub">
+        <addColumn tableName="notes">
+            <column name="title" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        
+        <addColumn tableName="notes">
+            <column name="parent_id" type="BIGINT"/>
+        </addColumn>
+        
+        <addColumn tableName="notes">
+            <column name="order_index" type="INTEGER" defaultValue="0"/>
+        </addColumn>
+        
+        <addForeignKeyConstraint baseTableName="notes" baseColumnNames="parent_id"
+                                 referencedTableName="notes" referencedColumnNames="id"
+                                 constraintName="fk_notes_parent"/>
+        
+        <rollback>
+            <dropForeignKeyConstraint constraintName="fk_notes_parent" baseTableName="notes"/>
+            <dropColumn tableName="notes" columnName="order_index"/>
+            <dropColumn tableName="notes" columnName="parent_id"/>
+            <dropColumn tableName="notes" columnName="title"/>
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

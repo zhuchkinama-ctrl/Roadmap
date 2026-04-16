@@ -186,8 +186,8 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         // Генерация JWT токенов
-        String token = jwtTokenProvider.generateToken(user.getUsername());
-        String refreshToken = jwtTokenProvider.generateToken(user.getUsername());
+        String token = jwtTokenProvider.generateToken(user.getUsername(), user.getId());
+        String refreshToken = jwtTokenProvider.generateToken(user.getUsername(), user.getId());
 
         log.info("AUTH_SERVICE_LOGIN STATE_CHANGE - tokens generated - username: {}", request.getUsername());
         log.info("AUTH_SERVICE_LOGIN EXIT - success - username: {}", request.getUsername());

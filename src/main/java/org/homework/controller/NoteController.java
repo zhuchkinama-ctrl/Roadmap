@@ -1,10 +1,16 @@
 // === CHUNK: NOTE_CONTROLLER [API] ===
-// Описание: REST-контроллер для управления заметками (заглушка).
-// Dependencies: Spring Web
+// Описание: REST-контроллер для управления заметками.
+// Dependencies: Spring Web, NoteService
 
 package org.homework.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.homework.dto.request.UpdateNoteRequest;
+import org.homework.dto.response.NoteDto;
+import org.homework.service.NoteService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -34,7 +40,10 @@ import org.springframework.http.ResponseEntity;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/notes")
+@RequiredArgsConstructor
 public class NoteController {
+    
+    private final NoteService noteService;
 
     // [START_NOTE_CONTROLLER_GET_TREE]
     /*
@@ -103,67 +112,132 @@ public class NoteController {
     // [START_NOTE_CONTROLLER_UPDATE]
     /*
      * ANCHOR: NOTE_CONTROLLER_UPDATE
-     * PURPOSE: Обновление заметки (заглушка).
+     * PURPOSE: Обновление заметки.
      *
      * @PreConditions:
      * - id валиден
      * - request валиден
+     * - пользователь аутентифицирован
+     * - пользователь имеет право EDIT на трек заметки
      *
      * @PostConditions:
-     * - возвращается 200 OK (заглушка)
+     * - возвращается 200 OK с обновленной заметкой
      *
      * @Invariants:
-     * - метод всегда возвращает 200 OK (заглушка)
+     * - обновление только если пользователь имеет право EDIT
      *
      * @SideEffects:
-     * - нет побочных эффектов (заглушка)
+     * - обновление заметки в БДда.lf
      *
      * @ForbiddenChanges:
      * - нельзя изменить сигнатуру метода без согласования
      *
      * @AllowedRefactorZone:
-     * - можно реализовать бизнес-логику обновления заметки
+     * - можно изменить формат ответа
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Object request) {
-        log.info("NOTE_CONTROLLER_UPDATE ENTRY - id: {}", id);
-        // TODO: реализовать обновление заметки
-        log.info("NOTE_CONTROLLER_UPDATE EXIT - stub - id: {}", id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<NoteDto> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateNoteRequest request,
+            Authentication authentication) {
+        log.info("NOTE_CONTROLLER_UPDATE ENTRY - id: {}, title: {}", id, request.getTitle());
+        
+        Long userId = getUserIdFromAuthentication(authentication);
+        NoteDto note = noteService.updateNote(id, request, userId);
+        
+        log.info("NOTE_CONTROLLER_UPDATE EXIT - note updated with id: {}", note.getId());
+        return ResponseEntity.ok(note);
     }
     // [END_NOTE_CONTROLLER_UPDATE]
 
     // [START_NOTE_CONTROLLER_DELETE]
     /*
      * ANCHOR: NOTE_CONTROLLER_DELETE
-     * PURPOSE: Удаление заметки (заглушка).
+     * PURPOSE: Удаление заметки.
      *
      * @PreConditions:
      * - id валиден
+     * - пользователь аутентифицирован
+     * - пользователь имеет право EDIT на трек заметки
      *
      * @PostConditions:
-     * - возвращается 200 OK (заглушка)
+     * - возвращается 200 OK
      *
      * @Invariants:
-     * - метод всегда возвращает 200 OK (заглушка)
+     * - удаление только если пользователь имеет право EDIT
      *
      * @SideEffects:
-     * - нет побочных эффектов (заглушка)
+     * - удаление заметки из БД (каскадное удаление дочерних)
      *
      * @ForbiddenChanges:
      * - нельзя изменить сигнатуру метода без согласования
      *
      * @AllowedRefactorZone:
-     * - можно реализовать бизнес-логику удаления заметки
+     * - можно добавить дополнительные параметры
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
         log.info("NOTE_CONTROLLER_DELETE ENTRY - id: {}", id);
-        // TODO: реализовать удаление заметки
-        log.info("NOTE_CONTROLLER_DELETE EXIT - stub - id: {}", id);
+        
+        Long userId = getUserIdFromAuthentication(authentication);
+        noteService.deleteNote(id, userId);
+        
+        log.info("NOTE_CONTROLLER_DELETE EXIT - note deleted with id: {}", id);
         return ResponseEntity.ok().build();
     }
     // [END_NOTE_CONTROLLER_DELETE]
+
+    // [START_NOTE_CONTROLLER_TOGGLE_COMPLETED]
+    /*
+     * ANCHOR: NOTE_CONTROLLER_TOGGLE_COMPLETED
+     * PURPOSE: Переключение статуса completed заметки.
+     *
+     * @PreConditions:
+     * - id валиден
+     * - пользователь аутентифицирован
+     * - пользователь имеет право EDIT на трек заметки
+     *
+     * @PostConditions:
+     * - возвращается 200 OK с обновленной заметкой
+     *
+     * @Invariants:
+     * - переключение только если пользователь имеет право EDIT
+     *
+     * @SideEffects:
+     * - обновление заметки в БД
+     *
+     * @ForbiddenChanges:
+     * - нельзя изменить сигнатуру метода без согласования
+     *
+     * @AllowedRefactorZone:
+     * - можно изменить формат ответа
+     */
+    @PatchMapping("/{id}/toggle-completed")
+    public ResponseEntity<NoteDto> toggleCompleted(@PathVariable Long id, Authentication authentication) {
+        log.info("NOTE_CONTROLLER_TOGGLE_COMPLETED ENTRY - id: {}", id);
+
+        Long userId = getUserIdFromAuthentication(authentication);
+        NoteDto note = noteService.toggleNoteCompleted(id, userId);
+
+        log.info("NOTE_CONTROLLER_TOGGLE_COMPLETED EXIT - note {} completed: {}", id, note.getCompleted());
+        return ResponseEntity.ok(note);
+    }
+    // [END_NOTE_CONTROLLER_TOGGLE_COMPLETED]
+
+    /**
+     * Извлечь userId из Authentication.
+     */
+    private Long getUserIdFromAuthentication(Authentication authentication) {
+        // Principal теперь содержит userId (Long) из JWT токена
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Long) {
+            return (Long) principal;
+        } else if (principal instanceof String) {
+            return Long.parseLong((String) principal);
+        } else {
+            throw new IllegalArgumentException("Invalid principal type: " + principal.getClass());
+        }
+    }
 }
 // [END_NOTE_CONTROLLER]
 // === END_CHUNK: NOTE_CONTROLLER ===

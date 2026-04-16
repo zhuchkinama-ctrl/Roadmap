@@ -602,6 +602,75 @@ export class TrackDetailComponent implements OnInit {
   }
   // [END_TRACK_DETAIL_DELETE_NOTE]
 
+  // [START_TRACK_DETAIL_TOGGLE_NOTE_COMPLETED]
+  /*
+   * ANCHOR: TRACK_DETAIL_TOGGLE_NOTE_COMPLETED
+   * PURPOSE: Переключение статуса выполненности заметки.
+   *
+   * @PreConditions:
+   * - noteId существует и пользователь имеет право EDIT
+   *
+   * @PostConditions:
+   * - при успехе: статус completed заметки инвертирован, заметки перезагружены
+   * - при ошибке: errorMessage содержит описание ошибки
+   *
+   * @Invariants:
+   * - loading сбрасывается в false после завершения запроса
+   *
+   * @SideEffects:
+   * - HTTP PATCH запрос к API
+   *
+   * @ForbiddenChanges:
+   * - нельзя убрать перезагрузку заметок после переключения
+   *
+   * @AllowedRefactorZone:
+   * - можно добавить анимацию переключения
+   */
+  toggleNoteCompleted(noteId: number, event: Event): void {
+    event.stopPropagation(); // Предотвращаем выбор заметки при клике на checkbox
+
+    logLine('ui', 'DEBUG', 'toggleNoteCompleted', 'TRACK_DETAIL_TOGGLE_NOTE_COMPLETED', 'ENTRY', {
+      note_id: noteId
+    });
+
+    this.noteService.toggleNoteCompleted(noteId).subscribe({
+      next: (updatedNote) => {
+        // Обновляем заметку в дереве
+        this.updateNoteInTree(this.notes, noteId, updatedNote);
+        this.successMessage = updatedNote.completed ? 'Заметка отмечена как выполненная' : 'Статус выполненности снят';
+        setTimeout(() => this.successMessage = '', 3000);
+
+        logLine('ui', 'INFO', 'toggleNoteCompleted', 'TRACK_DETAIL_TOGGLE_NOTE_COMPLETED', 'STATE_CHANGE', {
+          entity: 'note',
+          action: 'toggled_completed',
+          note_id: noteId,
+          completed: updatedNote.completed
+        });
+      },
+      error: () => {
+        this.errorMessage = 'Ошибка переключения статуса заметки';
+
+        logLine('ui', 'ERROR', 'toggleNoteCompleted', 'TRACK_DETAIL_TOGGLE_NOTE_COMPLETED', 'ERROR', {
+          note_id: noteId
+        });
+      }
+    });
+  }
+
+  // Вспомогательный метод для обновления заметки в дереве
+  private updateNoteInTree(notes: NoteTreeNodeDto[], noteId: number, updatedNote: any): void {
+    for (const note of notes) {
+      if (note.id === noteId) {
+        note.completed = updatedNote.completed;
+        return;
+      }
+      if (note.children && note.children.length > 0) {
+        this.updateNoteInTree(note.children, noteId, updatedNote);
+      }
+    }
+  }
+  // [END_TRACK_DETAIL_TOGGLE_NOTE_COMPLETED]
+
   // [START_TRACK_DETAIL_OPEN_SHARE_DIALOG]
   /*
    * ANCHOR: TRACK_DETAIL_OPEN_SHARE_DIALOG

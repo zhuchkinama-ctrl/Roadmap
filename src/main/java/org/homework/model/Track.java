@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 // [START_TRACK_ENTITY]
 /*
@@ -56,6 +58,10 @@ public class Track {
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonIgnore
     private User owner;
+    
+    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<TrackPermission> permissions = new ArrayList<>();
     
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();

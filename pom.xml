@@ -14,6 +14,8 @@
         <spring.boot.version>3.2.5</spring.boot.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <db.username>postgres</db.username>
     <db.password>postgres</db.password>
     </properties>
@@ -128,7 +130,14 @@
                 <version>3.10.1</version>
                 <configuration>
                     <release>17</release>
+                    <parameters>true</parameters>
+                    <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

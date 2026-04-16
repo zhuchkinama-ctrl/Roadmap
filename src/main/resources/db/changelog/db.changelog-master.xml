@@ -5,11 +5,13 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
 
-    <include file="001-create-users-table.xml"/>
+  <!--  <include file="001-create-users-table.xml"/>
     <include file="002-create-tracks-table.xml"/>
     <include file="003-create-notes-table.xml"/>
     <include file="004-create-track-permissions-table.xml"/>
     <include file="005-add-role-and-enabled-to-users.xml"/>
     <include file="006-create-admin-user.xml"/>
+    <include file="007-add-missing-columns-to-notes.xml"/>-->
+    <include file="008-add-completed-to-notes.xml"/>
 
 </databaseChangeLog>

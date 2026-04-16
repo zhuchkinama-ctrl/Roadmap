@@ -53,6 +53,11 @@ public class Note {
     private Track track;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    @JsonIgnore
+    private User author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     @JsonIgnore
     private Note parent;
@@ -71,6 +76,9 @@ public class Note {
 
     @Column(nullable = false)
     private Instant updatedAt = Instant.now();
+
+    @Column(nullable = false)
+    private Boolean completed = false;
 }
 // [END_NOTE_ENTITY]
 // === END_CHUNK: NOTE_ENTITY ===

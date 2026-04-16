@@ -43,7 +43,7 @@
     <div class="track-content">
       <div class="notes-panel">
         <div class="panel-header">
-          <h2>Заметки</h2>
+          <h2>Путь самурая</h2>
           @if (canEdit()) {
             <button class="btn-primary btn-sm" (click)="openCreateDialog()">
               <span class="btn-icon">➕</span>
@@ -268,8 +268,17 @@
 <ng-template #noteTree let-notes let-level="level">
   <ul class="note-list" [style.padding-left.px]="level * 20">
     @for (note of notes; track note.id) {
-      <li class="note-item" [class.selected]="selectedNote?.id === note.id">
+      <li class="note-item" [class.selected]="selectedNote?.id === note.id" [class.completed]="note.completed">
         <div class="note-item-content" (click)="selectNote(note)">
+          @if (canEdit()) {
+            <input
+              type="checkbox"
+              class="note-completed-checkbox"
+              [checked]="note.completed"
+              (click)="toggleNoteCompleted(note.id, $event)"
+              [attr.aria-label]="note.completed ? 'Отметить как невыполненную' : 'Отметить как выполненную'"
+            />
+          }
           <span class="note-icon">📄</span>
           <span class="note-title">{{ note.title }}</span>
           @if (note.children && note.children.length > 0) {

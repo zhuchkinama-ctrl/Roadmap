@@ -55,19 +55,20 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username) {
-        log.debug("JWT_TOKEN_PROVIDER ENTRY - generateToken - username: {}", username);
+    public String generateToken(String username, Long userId) {
+        log.debug("JWT_TOKEN_PROVIDER ENTRY - generateToken - username: {}, userId: {}", username, userId);
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         String token = Jwts.builder()
                 .subject(username)
+                .claim("userId", userId)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
         
-        log.debug("JWT_TOKEN_PROVIDER EXIT - generateToken - success - username: {}", username);
+        log.debug("JWT_TOKEN_PROVIDER EXIT - generateToken - success - username: {}, userId: {}", username, userId);
         return token;
     }
 
@@ -82,6 +83,19 @@ public class JwtTokenProvider {
         String username = claims.getSubject();
         log.debug("JWT_TOKEN_PROVIDER EXIT - getUsernameFromToken - success - username: {}", username);
         return username;
+    }
+
+    public Long getUserIdFromToken(String token) {
+        log.debug("JWT_TOKEN_PROVIDER ENTRY - getUserIdFromToken");
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        Long userId = claims.get("userId", Long.class);
+        log.debug("JWT_TOKEN_PROVIDER EXIT - getUserIdFromToken - success - userId: {}", userId);
+        return userId;
     }
 
     public boolean validateToken(String token) {

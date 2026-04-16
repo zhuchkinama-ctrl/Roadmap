@@ -14,6 +14,7 @@ public class NoteDto {
     private String title;
     private String content;
     private Integer orderIndex;
+    private Boolean completed;
     private Instant createdAt;
     private Instant updatedAt;
 }

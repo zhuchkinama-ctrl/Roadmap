@@ -267,6 +267,40 @@ export class NoteService {
     return result;
   }
   // [END_NOTE_MOVE]
+
+  // [START_NOTE_TOGGLE_COMPLETED]
+  /*
+   * ANCHOR: NOTE_TOGGLE_COMPLETED
+   * PURPOSE: Переключение статуса выполненности заметки.
+   *
+   * @PreConditions:
+   * - id существует и пользователь имеет право EDIT на заметку
+   *
+   * @PostConditions:
+   * - при успехе: статус completed заметки инвертирован
+   * - при ошибке: выбрасывается HTTP ошибка (например, нет прав)
+   *
+   * @Invariants:
+   * - статус completed всегда инвертируется (true -> false, false -> true)
+   *
+   * @SideEffects:
+   * - HTTP PATCH запрос к /notes/{id}/toggle-completed
+   *
+   * @ForbiddenChanges:
+   * - нельзя изменить эндпоинт без согласования
+   *
+   * @AllowedRefactorZone:
+   * - можно добавить кэширование статуса
+   */
+  toggleNoteCompleted(id: number): Observable<NoteDto> {
+    logLine('note', 'DEBUG', 'toggleNoteCompleted', 'NOTE_TOGGLE_COMPLETED', 'ENTRY', { id });
+
+    const result = this.http.patch<NoteDto>(`${this.apiUrl}/notes/${id}/toggle-completed`, {});
+
+    logLine('note', 'DEBUG', 'toggleNoteCompleted', 'NOTE_TOGGLE_COMPLETED', 'EXIT', { id });
+    return result;
+  }
+  // [END_NOTE_TOGGLE_COMPLETED]
 }
 // [END_NOTE_SERVICE]
 // === END_CHUNK: NOTE_SERVICE ===

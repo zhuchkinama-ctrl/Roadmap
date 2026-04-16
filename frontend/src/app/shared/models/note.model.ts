@@ -5,6 +5,7 @@ export interface NoteDto {
   content?: string;
   parentId?: number;
   orderIndex: number;
+  completed: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -14,6 +15,7 @@ export interface NoteTreeNodeDto {
   title: string;
   content?: string;
   orderIndex: number;
+  completed: boolean;
   children: NoteTreeNodeDto[];
 }
 
