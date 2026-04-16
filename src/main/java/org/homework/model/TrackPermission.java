@@ -5,6 +5,35 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
+// === CHUNK: TRACK_PERMISSION_ENTITY [MODEL] ===
+// Описание: JPA-сущность прав доступа к треку.
+// Dependencies: Jakarta Persistence, Lombok, Jackson
+
+// [START_TRACK_PERMISSION_ENTITY]
+/*
+ * ANCHOR: TRACK_PERMISSION_ENTITY
+ * PURPOSE: JPA-сущность прав доступа к треку.
+ *
+ * @PreConditions:
+ * - нет нетривиальных предусловий
+ *
+ * @PostConditions:
+ * - сущность готова к использованию с JPA
+ *
+ * @Invariants:
+ * - уникальная пара (track_id, user_id)
+ * - permissionType может быть только VIEW или EDIT
+ *
+ * @SideEffects:
+ * - нет побочных эффектов
+ *
+ * @ForbiddenChanges:
+ * - нельзя убрать уникальное ограничение (track_id, user_id)
+ * - нельзя сделать track или user nullable
+ *
+ * @AllowedRefactorZone:
+ * - можно добавить дополнительные поля (например, grantedBy)
+ */
 @Entity
 @Table(name = "track_permissions", uniqueConstraints = {@UniqueConstraint(columnNames = {"track_id", "user_id"})})
 @Getter
@@ -33,3 +62,5 @@ public class TrackPermission {
     @Column(name = "granted_at", nullable = false, updatable = false)
     private Instant grantedAt = Instant.now();
 }
+// [END_TRACK_PERMISSION_ENTITY]
+// === END_CHUNK: TRACK_PERMISSION_ENTITY ===

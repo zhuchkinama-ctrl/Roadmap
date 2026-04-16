@@ -7,8 +7,32 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.Instant;
 
-/**
- * Глобальный обработчик исключений.
+// === CHUNK: GLOBAL_EXCEPTION_HANDLER [EXCEPTION] ===
+// Описание: Глобальный обработчик исключений для REST API.
+// Dependencies: Spring Web, SLF4J
+
+// [START_GLOBAL_EXCEPTION_HANDLER]
+/*
+ * ANCHOR: GLOBAL_EXCEPTION_HANDLER
+ * PURPOSE: Глобальный обработчик исключений для REST API.
+ *
+ * @PreConditions:
+ * - Spring контекст инициализирован
+ *
+ * @PostConditions:
+ * - все исключения обрабатываются и возвращаются в едином формате ErrorResponse
+ *
+ * @Invariants:
+ * - ErrorResponse всегда содержит timestamp, status, error, message, path
+ *
+ * @SideEffects:
+ * - запись в лог при обработке исключений
+ *
+ * @ForbiddenChanges:
+ * - нельзя изменить формат ErrorResponse без согласования
+ *
+ * @AllowedRefactorZone:
+ * - можно добавить дополнительные обработчики исключений
  */
 @Slf4j
 @ControllerAdvice
@@ -16,7 +40,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        log.error("UserAlreadyExistsException caught: {}", ex.getMessage());
+        log.error("GLOBAL_EXCEPTION_HANDLER ERROR - UserAlreadyExistsException: {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse();
         error.setTimestamp(Instant.now());
         error.setStatus(HttpStatus.CONFLICT.value());
@@ -28,13 +52,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        log.error("Exception caught: {} - {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
+        log.error("GLOBAL_EXCEPTION_HANDLER ERROR - Exception: {} - {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
 
         // Дополнительное логирование для StackOverflowError
         if (ex instanceof jakarta.servlet.ServletException && ex.getCause() instanceof StackOverflowError) {
-            log.error("StackOverflowError detected - likely caused by circular reference in JSON serialization");
-            log.error("This usually happens when JPA entities with bidirectional relationships are serialized without @JsonIgnore");
-            log.error("Check entities: User, Track, Note, TrackPermission for missing @JsonIgnore annotations");
+            log.error("GLOBAL_EXCEPTION_HANDLER ERROR - StackOverflowError detected - likely caused by circular reference in JSON serialization");
+            log.error("GLOBAL_EXCEPTION_HANDLER ERROR - This usually happens when JPA entities with bidirectional relationships are serialized without @JsonIgnore");
+            log.error("GLOBAL_EXCEPTION_HANDLER ERROR - Check entities: User, Track, Note, TrackPermission for missing @JsonIgnore annotations");
         }
 
         ErrorResponse error = new ErrorResponse();
@@ -46,6 +70,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+// [END_GLOBAL_EXCEPTION_HANDLER]
+// === END_CHUNK: GLOBAL_EXCEPTION_HANDLER ===
 
 /**
  * Simple error response DTO matching the specification.

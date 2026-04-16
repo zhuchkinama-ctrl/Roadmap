@@ -175,6 +175,12 @@ public class AuthService {
                 )
         );
 
+        // Явная проверка аутентификации
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("AUTH_SERVICE_LOGIN DECISION - authentication failed - username: {}", request.getUsername());
+            throw new RuntimeException("Аутентификация не удалась");
+        }
+
         // Получение пользователя из базы данных
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));

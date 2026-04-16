@@ -66,35 +66,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         
-        log.debug("JWT Filter processing request: {} {}", method, requestURI);
+        log.debug("JWT_AUTHENTICATION_FILTER CHECK - request: {} {}", method, requestURI);
         
         // Пропускаем публичные эндпоинты без проверки токена
         if (requestURI.startsWith("/api/v1/auth/")) {
-            log.debug("Skipping JWT authentication for public endpoint: {}", requestURI);
+            log.debug("JWT_AUTHENTICATION_FILTER DECISION - skip_public_endpoint - uri: {}", requestURI);
             filterChain.doFilter(request, response);
             return;
         }
         
         String header = request.getHeader("Authorization");
-        log.debug("Authorization header: {}", header != null ? "Bearer ***" : "null");
+        log.debug("JWT_AUTHENTICATION_FILTER CHECK - authorization_header: {}", header != null ? "Bearer ***" : "null");
         
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            log.debug("Token found, validating...");
+            log.debug("JWT_AUTHENTICATION_FILTER CHECK - token_found - validating");
             
             if (tokenProvider.validateToken(token)) {
                 String username = tokenProvider.getUsernameFromToken(token);
-                log.debug("Token valid for user: {}", username);
+                log.debug("JWT_AUTHENTICATION_FILTER CHECK - token_valid - username: {}", username);
                 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         username, null, Collections.emptyList());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                log.warn("Invalid token provided");
+                log.warn("JWT_AUTHENTICATION_FILTER ERROR - invalid_token");
             }
         } else {
-            log.debug("No Bearer token found in request");
+            log.debug("JWT_AUTHENTICATION_FILTER CHECK - no_bearer_token");
         }
         
         filterChain.doFilter(request, response);
