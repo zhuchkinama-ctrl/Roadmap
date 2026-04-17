@@ -46,6 +46,7 @@ export class TrackDetailComponent implements OnInit {
   track: TrackDto | null = null;
   notes: NoteTreeNodeDto[] = [];
   selectedNote: NoteTreeNodeDto | null = null;
+  expandedNotes: Set<number> = new Set<number>();
 
   editForm: { title: string; content: string } = { title: '', content: '' };
   createForm: { title: string; content: string; parentId: number | null } = { title: '', content: '', parentId: null };
@@ -1046,6 +1047,75 @@ export class TrackDetailComponent implements OnInit {
     });
   }
   // [END_TRACK_DETAIL_FORMAT_DATE]
+
+  // [START_TRACK_DETAIL_TOGGLE_NOTE_EXPANSION]
+  /*
+   * ANCHOR: TRACK_DETAIL_TOGGLE_NOTE_EXPANSION
+   * PURPOSE: Переключение состояния раскрытия заметки.
+   *
+   * @PreConditions:
+   * - noteId валидный ID заметки
+   *
+   * @PostConditions:
+   * - состояние раскрытия заметки переключено
+   *
+   * @Invariants:
+   * - expandedNotes всегда содержит ID раскрытых заметок
+   *
+   * @SideEffects:
+   * - нет побочных эффектов
+   *
+   * @ForbiddenChanges:
+   * - нельзя изменить логику без согласования
+   *
+   * @AllowedRefactorZone:
+   * - можно добавить анимацию при раскрытии/сворачивании
+   */
+  toggleNoteExpansion(noteId: number): void {
+    logLine('ui', 'DEBUG', 'toggleNoteExpansion', 'TRACK_DETAIL_TOGGLE_NOTE_EXPANSION', 'ENTRY', {
+      note_id: noteId
+    });
+
+    if (this.expandedNotes.has(noteId)) {
+      this.expandedNotes.delete(noteId);
+    } else {
+      this.expandedNotes.add(noteId);
+    }
+
+    logLine('ui', 'DEBUG', 'toggleNoteExpansion', 'TRACK_DETAIL_TOGGLE_NOTE_EXPANSION', 'EXIT', {
+      note_id: noteId,
+      expanded: this.expandedNotes.has(noteId)
+    });
+  }
+  // [END_TRACK_DETAIL_TOGGLE_NOTE_EXPANSION]
+
+  // [START_TRACK_DETAIL_IS_NOTE_EXPANDED]
+  /*
+   * ANCHOR: TRACK_DETAIL_IS_NOTE_EXPANDED
+   * PURPOSE: Проверка, раскрыта ли заметка.
+   *
+   * @PreConditions:
+   * - noteId валидный ID заметки
+   *
+   * @PostConditions:
+   * - возвращается true если заметка раскрыта
+   *
+   * @Invariants:
+   * - результат зависит только от expandedNotes
+   *
+   * @SideEffects:
+   * - нет побочных эффектов
+   *
+   * @ForbiddenChanges:
+   * - нельзя изменить логику без согласования
+   *
+   * @AllowedRefactorZone:
+   * - можно добавить кэширование результата
+   */
+  isNoteExpanded(noteId: number): boolean {
+    return this.expandedNotes.has(noteId);
+  }
+  // [END_TRACK_DETAIL_IS_NOTE_EXPANDED]
 
   // [START_TRACK_DETAIL_GO_BACK]
   /*

@@ -1,0 +1,7 @@
+# Feature Specifications
+
+Эта директория содержит Feature Specifications для всех фич проекта.
+
+Формат имени файла: `FEAT-XXX-feature-name.md`
+
+Пример: `FEAT-001-user-authentication.md`

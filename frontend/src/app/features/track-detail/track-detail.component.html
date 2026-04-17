@@ -268,7 +268,7 @@
 <ng-template #noteTree let-notes let-level="level">
   <ul class="note-list" [style.padding-left.px]="level * 20">
     @for (note of notes; track note.id) {
-      <li class="note-item" [class.selected]="selectedNote?.id === note.id" [class.completed]="note.completed">
+      <li class="note-item" [class.completed]="note.completed">
         <div class="note-item-content" (click)="selectNote(note)">
           @if (canEdit()) {
             <input
@@ -279,13 +279,17 @@
               [attr.aria-label]="note.completed ? 'Отметить как невыполненную' : 'Отметить как выполненную'"
             />
           }
-          <span class="note-icon">📄</span>
+          @if (note.children && note.children.length > 0) {
+            <span class="note-expand-icon" (click)="toggleNoteExpansion(note.id); $event.stopPropagation()" [attr.aria-label]="isNoteExpanded(note.id) ? 'Свернуть' : 'Развернуть'">
+              {{ isNoteExpanded(note.id) ? '▼' : '▶' }}
+            </span>
+          }
           <span class="note-title">{{ note.title }}</span>
           @if (note.children && note.children.length > 0) {
             <span class="note-children-count">({{ note.children.length }})</span>
           }
         </div>
-        @if (note.children && note.children.length > 0) {
+        @if (note.children && note.children.length > 0 && isNoteExpanded(note.id)) {
           <ng-container *ngTemplateOutlet="noteTree; context: { $implicit: note.children, level: level + 1 }"></ng-container>
         }
       </li>

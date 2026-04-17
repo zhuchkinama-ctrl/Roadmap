@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Validation Report Template для GRACE
+Адаптировано для TrackHub: Java 17 + Spring Boot + Angular 17
+-->
+
+<validation-report>
+  <metadata>
+    <feature-id>FEAT-XXX</feature-id>
+    <feature-name>[Название фичи]</feature-name>
+    <version>1.0.0</version>
+    <status>Draft | In Progress | Completed</status>
+    <author>[Имя автора]</author>
+    <created>YYYY-MM-DD</created>
+    <updated>YYYY-MM-DD</updated>
+  </metadata>
+
+  <!-- Level 1: Детерминированные тесты -->
+  <level-1-tests>
+    <test id="T-1-1">
+      <name>[Название теста]</name>
+      <description>[Описание теста]</description>
+      <type>unit</type>
+      <layer>backend | frontend</layer>
+      <expected-result>[Ожидаемый результат]</expected-result>
+      <status>pending | passed | failed</status>
+      <anchor>[ANCHOR_ID]</anchor>
+    </test>
+    
+    <test id="T-1-2">
+      <name>[Название теста]</name>
+      <description>[Описание теста]</description>
+      <type>unit</type>
+      <layer>backend | frontend</layer>
+      <expected-result>[Ожидаемый результат]</expected-result>
+      <status>pending | passed | failed</status>
+      <anchor>[ANCHOR_ID]</anchor>
+    </test>
+  </level-1-tests>
+
+  <!-- Level 2: Тесты траектории -->
+  <level-2-tests>
+    <test id="T-2-1">
+      <name>[Название теста]</name>
+      <description>[Описание теста]</description>
+      <type>trajectory</type>
+      <layer>backend | frontend</layer>
+      <anchor>[ANCHOR_ID]</anchor>
+      <log-points>
+        <point type="ENTRY" required="true"/>
+        <point type="EXIT" required="true"/>
+        <point type="CHECK" required="false"/>
+        <point type="DECISION" required="false"/>
+        <point type="BRANCH" required="false"/>
+        <point type="ERROR" required="false"/>
+      </log-points>
+      <expected-result>[Ожидаемый результат]</expected-result>
+      <status>pending | passed | failed</status>
+    </test>
+    
+    <test id="T-2-2">
+      <name>[Название теста]</name>
+      <description>[Описание теста]</description>
+      <type>trajectory</type>
+      <layer>backend | frontend</layer>
+      <anchor>[ANCHOR_ID]</anchor>
+      <log-points>
+        <point type="ENTRY" required="true"/>
+        <point type="EXIT" required="true"/>
+        <point type="STATE_CHANGE" required="false"/>
+      </log-points>
+      <expected-result>[Ожидаемый результат]</expected-result>
+      <status>pending | passed | failed</status>
+    </test>
+  </level-2-tests>
+
+  <!-- Level 3: Интеграционные тесты -->
+  <level-3-tests>
+    <test id="T-3-1">
+      <name>[Название теста]</name>
+      <description>[Описание теста]</description>
+      <type>integration</type>
+      <layer>backend | frontend | e2e</layer>
+      <scenario>
+        <step id="1" action="[Действие]" expected="[Ожидаемый результат]"/>
+        <step id="2" action="[Действие]" expected="[Ожидаемый результат]"/>
+        <step id="3" action="[Действие]" expected="[Ожидаемый результат]"/>
+      </scenario>
+      <expected-result>[Ожидаемый результат]</expected-result>
+      <status>pending | passed | failed</status>
+    </test>
+    
+    <test id="T-3-2">
+      <name>[Название теста]</name>
+      <description>[Описание теста]</description>
+      <type>integration</type>
+      <layer>backend | frontend | e2e</layer>
+      <scenario>
+        <step id="1" action="[Действие]" expected="[Ожидаемый результат]"/>
+        <step id="2" action="[Действие]" expected="[Ожидаемый результат]"/>
+      </scenario>
+      <expected-result>[Ожидаемый результат]</expected-result>
+      <status>pending | passed | failed</status>
+    </test>
+  </level-3-tests>
+
+  <!-- Контракты -->
+  <contracts>
+    <contract id="[ANCHOR_ID_1]">
+      <name>[Название контракта]</name>
+      <layer>backend | frontend</layer>
+      <component>[Имя компонента]</component>
+      <status>pending | validated | failed</status>
+      <validation-checks>
+        <check id="C-1" type="preconditions" status="pending | passed | failed">
+          <description>[Проверка предусловий]</description>
+        </check>
+        <check id="C-2" type="postconditions" status="pending | passed | failed">
+          <description>[Проверка постусловий]</description>
+        </check>
+        <check id="C-3" type="invariants" status="pending | passed | failed">
+          <description>[Проверка инвариантов]</description>
+        </check>
+        <check id="C-4" type="side-effects" status="pending | passed | failed">
+          <description>[Проверка побочных эффектов]</description>
+        </check>
+      </validation-checks>
+    </contract>
+    
+    <contract id="[ANCHOR_ID_2]">
+      <name>[Название контракта]</name>
+      <layer>backend | frontend</layer>
+      <component>[Имя компонента]</component>
+      <status>pending | validated | failed</status>
+      <validation-checks>
+        <check id="C-5" type="preconditions" status="pending | passed | failed">
+          <description>[Проверка предусловий]</description>
+        </check>
+        <check id="C-6" type="postconditions" status="pending | passed | failed">
+          <description>[Проверка постусловий]</description>
+        </check>
+      </validation-checks>
+    </contract>
+  </contracts>
+
+  <!-- Зависимости между тестами -->
+  <dependencies>
+    <dependency from="T-1-1" to="T-2-1" type="sequential"/>
+    <dependency from="T-2-1" to="T-3-1" type="sequential"/>
+  </dependencies>
+
+  <!-- Критерии проверки -->
+  <acceptance-criteria>
+    <criterion id="AC-1" status="pending | passed | failed">
+      <description>[Критерий приёмки]</description>
+      <related-tests>
+        <test-ref>T-1-1</test-ref>
+        <test-ref>T-2-1</test-ref>
+      </related-tests>
+    </criterion>
+    
+    <criterion id="AC-2" status="pending | passed | failed">
+      <description>[Критерий приёмки]</description>
+      <related-tests>
+        <test-ref>T-1-2</test-ref>
+        <test-ref>T-3-1</test-ref>
+      </related-tests>
+    </criterion>
+  </acceptance-criteria>
+
+  <!-- Итоговый статус -->
+  <summary>
+    <total-tests>0</total-tests>
+    <passed-tests>0</passed-tests>
+    <failed-tests>0</failed-tests>
+    <pending-tests>0</pending-tests>
+    <overall-status>pending | passed | failed</overall-status>
+  </summary>
+
+  <!-- Примечания -->
+  <notes>
+    <note id="N-1">
+      <description>[Примечание]</description>
+      <author>[Имя автора]</author>
+      <date>YYYY-MM-DD</date>
+    </note>
+  </notes>
+</validation-report>

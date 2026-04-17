@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Семантический граф проекта TrackHub (Треки Развития)
+  Версия: 1.0.0
+  Назначение: Инструмент для управления личным и профессиональным развитием
+-->
+<semantic-graph>
+  <meta>
+    <product>TrackHub</product>
+    <version>1.0.0</version>
+    <purpose>Инструмент для управления личным и профессиональным развитием, позволяющий пользователям создавать иерархические треки и заметки, а также делиться ими с другими пользователями</purpose>
+    <architecture>Three-tier architecture: Angular SPA → Spring Boot API → PostgreSQL</architecture>
+    <environment>
+      <backend>Java 17, Spring Boot 3.3.x, PostgreSQL 16</backend>
+      <frontend>Angular 17+, TypeScript 5.x, PrimeNG 17+</frontend>
+      <security>JWT tokens, Spring Security, BCrypt</security>
+    </environment>
+  </meta>
+
+  <components>
+    <!-- Frontend Components -->
+    <component id="FRONTEND_SPA" kind="ui-layer" path="frontend/src/app">
+      <description>Одностраничное приложение на Angular 17+ для управления треками и заметками</description>
+      <technology>Angular 17+, TypeScript 5.x, PrimeNG, PrimeFlex, RxJS/Signals</technology>
+      <role>Пользовательский интерфейс</role>
+      <depends-on ref="AUTH_SERVICE_FRONTEND"/>
+      <depends-on ref="TRACK_SERVICE_FRONTEND"/>
+      <depends-on ref="NOTE_SERVICE_FRONTEND"/>
+      <depends-on ref="ADMIN_SERVICE_FRONTEND"/>
+      <exposes>UI компоненты для управления треками, заметками и пользователями</exposes>
+      <consumes>REST API от backend</consumes>
+    </component>
+
+    <component id="AUTH_SERVICE_FRONTEND" kind="service" path="frontend/src/app/core/services/auth.service.ts">
+      <description>Сервис аутентификации на фронтенде</description>
+      <role>Управление токенами и сессией пользователя</role>
+      <depends-on ref="HTTP_CLIENT"/>
+      <exposes>Методы для входа, регистрации, обновления токенов</exposes>
+      <consumes>AuthController REST API</consumes>
+    </component>
+
+    <component id="TRACK_SERVICE_FRONTEND" kind="service" path="frontend/src/app/core/services/track.service.ts">
+      <description>Сервис для работы с треками на фронтенде</description>
+      <role>Управление треками развития</role>
+      <depends-on ref="HTTP_CLIENT"/>
+      <exposes>CRUD операции для треков</exposes>
+      <consumes>TrackController REST API</consumes>
+    </component>
+
+    <component id="NOTE_SERVICE_FRONTEND" kind="service" path="frontend/src/app/core/services/note.service.ts">
+      <description>Сервис для работы с заметками на фронтенде</description>
+      <role>Управление иерархическими заметками</role>
+      <depends-on ref="HTTP_CLIENT"/>
+      <exposes>CRUD операции для заметок</exposes>
+      <consumes>NoteController REST API</consumes>
+    </component>
+
+    <component id="ADMIN_SERVICE_FRONTEND" kind="service" path="frontend/src/app/core/services/admin.service.ts">
+      <description>Сервис для административных функций на фронтенде</description>
+      <role>Управление пользователями и ролями</role>
+      <depends-on ref="HTTP_CLIENT"/>
+      <exposes>Методы для управления пользователями</exposes>
+      <consumes>AdminController REST API</consumes>
+    </component>
+
+    <component id="HTTP_CLIENT" kind="infrastructure" path="frontend/src/app/core/interceptors/auth.interceptor.ts">
+      <description>Angular HttpClient с AuthInterceptor</description>
+      <role>HTTP клиент с автоматическим добавлением JWT токена</role>
+      <exposes>HTTP запросы с авторизацией</exposes>
+      <consumes>Backend REST API</consumes>
+    </component>
+
+    <component id="AUTH_GUARD" kind="security" path="frontend/src/app/core/guards/auth.guard.ts">
+      <description>Guard для защиты маршрутов, требующих аутентификации</description>
+      <role>Проверка наличия валидного токена</role>
+      <depends-on ref="AUTH_SERVICE_FRONTEND"/>
+      <exposes>Защиту маршрутов</exposes>
+    </component>
+
+    <component id="ADMIN_GUARD" kind="security" path="frontend/src/app/core/guards/admin.guard.ts">
+      <description>Guard для защиты административных маршрутов</description>
+      <role>Проверка роли ADMIN</role>
+      <depends-on ref="AUTH_SERVICE_FRONTEND"/>
+      <exposes>Защиту admin-маршрутов</exposes>
+    </component>
+
+    <!-- Backend Components -->
+    <component id="API_GATEWAY" kind="api-layer" path="src/main/java/org/homework">
+      <description>Spring Boot API Gateway - единая точка входа для всех REST запросов</description>
+      <technology>Spring Boot 3.3.x, Spring Web</technology>
+      <role>Маршрутизация и обработка HTTP запросов</role>
+      <depends-on ref="AUTH_SERVICE_BACKEND"/>
+      <depends-on ref="TRACK_SERVICE_BACKEND"/>
+      <depends-on ref="NOTE_SERVICE_BACKEND"/>
+      <depends-on ref="PERMISSION_SERVICE"/>
+      <depends-on ref="ADMIN_SERVICE_BACKEND"/>
+      <exposes>REST API endpoints</exposes>
+      <consumes>HTTP запросы от фронтенда</consumes>
+    </component>
+
+    <component id="AUTH_CONTROLLER" kind="controller" path="src/main/java/org/homework/controller/AuthController.java">
+      <description>REST контроллер для аутентификации и регистрации</description>
+      <role>Обработка auth запросов</role>
+      <depends-on ref="AUTH_SERVICE_BACKEND"/>
+      <exposes>/api/auth/* endpoints</exposes>
+      <consumes>AuthService бизнес-логику</consumes>
+    </component>
+
+    <component id="TRACK_CONTROLLER" kind="controller" path="src/main/java/org/homework/controller/TrackController.java">
+      <description>REST контроллер для управления треками</description>
+      <role>Обработка track запросов</role>
+      <depends-on ref="TRACK_SERVICE_BACKEND"/>
+      <exposes>/api/tracks/* endpoints</exposes>
+      <consumes>TrackService бизнес-логику</consumes>
+    </component>
+
+    <component id="NOTE_CONTROLLER" kind="controller" path="src/main/java/org/homework/controller/NoteController.java">
+      <description>REST контроллер для управления заметками</description>
+      <role>Обработка note запросов</role>
+      <depends-on ref="NOTE_SERVICE_BACKEND"/>
+      <exposes>/api/notes/* endpoints</exposes>
+      <consumes>NoteService бизнес-логику</consumes>
+    </component>
+
+    <component id="PERMISSION_CONTROLLER" kind="controller" path="src/main/java/org/homework/controller/PermissionController.java">
+      <description>REST контроллер для управления правами доступа</description>
+      <role>Обработка permission запросов</role>
+      <depends-on ref="PERMISSION_SERVICE"/>
+      <exposes>/api/permissions/* endpoints</exposes>
+      <consumes>PermissionService бизнес-логику</consumes>
+    </component>
+
+    <component id="ADMIN_CONTROLLER" kind="controller" path="src/main/java/org/homework/controller">
+      <description>REST контроллер для административных функций</description>
+      <role>Обработка admin запросов</role>
+      <depends-on ref="ADMIN_SERVICE_BACKEND"/>
+      <exposes>/api/admin/* endpoints</exposes>
+      <consumes>AdminService бизнес-логику</consumes>
+    </component>
+
+    <component id="AUTH_SERVICE_BACKEND" kind="service" path="src/main/java/org/homework/service/AuthService.java">
+      <description>Сервис аутентификации на бэкенде</description>
+      <role>Регистрация, аутентификация, управление токенами</role>
+      <depends-on ref="USER_REPOSITORY"/>
+      <depends-on ref="JWT_TOKEN_PROVIDER"/>
+      <exposes>Методы для работы с пользователями и токенами</exposes>
+      <consumes>UserRepository, JWT токены</consumes>
+    </component>
+
+    <component id="TRACK_SERVICE_BACKEND" kind="service" path="src/main/java/org/homework/service/TrackService.java">
+      <description>Сервис для управления треками</description>
+      <role>Бизнес-логика для треков</role>
+      <depends-on ref="TRACK_REPOSITORY"/>
+      <depends-on ref="PERMISSION_SERVICE"/>
+      <exposes>CRUD операции для треков</exposes>
+      <consumes>TrackRepository, PermissionService</consumes>
+    </component>
+
+    <component id="NOTE_SERVICE_BACKEND" kind="service" path="src/main/java/org/homework/service">
+      <description>Сервис для управления заметками</description>
+      <role>Бизнес-логика для иерархических заметок</role>
+      <depends-on ref="NOTE_REPOSITORY"/>
+      <depends-on ref="PERMISSION_SERVICE"/>
+      <exposes>CRUD операции для заметок</exposes>
+      <consumes>NoteRepository, PermissionService</consumes>
+    </component>
+
+    <component id="PERMISSION_SERVICE" kind="service" path="src/main/java/org/homework/service">
+      <description>Сервис для проверки прав доступа</description>
+      <role>Проверка прав OWNER, EDIT, VIEW</role>
+      <depends-on ref="TRACK_PERMISSION_REPOSITORY"/>
+      <exposes>Методы проверки прав доступа</exposes>
+      <consumes>TrackPermissionRepository</consumes>
+    </component>
+
+    <component id="ADMIN_SERVICE_BACKEND" kind="service" path="src/main/java/org/homework/service">
+      <description>Сервис для административных функций</description>
+      <role>Управление пользователями и ролями</role>
+      <depends-on ref="USER_REPOSITORY"/>
+      <exposes>Методы для управления пользователями</exposes>
+      <consumes>UserRepository</consumes>
+    </component>
+
+    <!-- Data Access Layer -->
+    <component id="USER_REPOSITORY" kind="repository" path="src/main/java/org/homework/repository/UserRepository.java">
+      <description>JPA репозиторий для сущности User</description>
+      <technology>Spring Data JPA, Hibernate</technology>
+      <role>Доступ к таблице users</role>
+      <depends-on ref="POSTGRESQL_DB"/>
+      <exposes>CRUD операции для User</exposes>
+      <consumes>PostgreSQL users table</consumes>
+    </component>
+
+    <component id="TRACK_REPOSITORY" kind="repository" path="src/main/java/org/homework/repository/TrackRepository.java">
+      <description>JPA репозиторий для сущности Track</description>
+      <technology>Spring Data JPA, Hibernate</technology>
+      <role>Доступ к таблице tracks</role>
+      <depends-on ref="POSTGRESQL_DB"/>
+      <exposes>CRUD операции для Track</exposes>
+      <consumes>PostgreSQL tracks table</consumes>
+    </component>
+
+    <component id="NOTE_REPOSITORY" kind="repository" path="src/main/java/org/homework/repository/NoteRepository.java">
+      <description>JPA репозиторий для сущности Note</description>
+      <technology>Spring Data JPA, Hibernate</technology>
+      <role>Доступ к таблице notes</role>
+      <depends-on ref="POSTGRESQL_DB"/>
+      <exposes>CRUD операции для Note</exposes>
+      <consumes>PostgreSQL notes table</consumes>
+    </component>
+
+    <component id="TRACK_PERMISSION_REPOSITORY" kind="repository" path="src/main/java/org/homework/repository/TrackPermissionRepository.java">
+      <description>JPA репозиторий для сущности TrackPermission</description>
+      <technology>Spring Data JPA, Hibernate</technology>
+      <role>Доступ к таблице track_permissions</role>
+      <depends-on ref="POSTGRESQL_DB"/>
+      <exposes>CRUD операции для TrackPermission</exposes>
+      <consumes>PostgreSQL track_permissions table</consumes>
+    </component>
+
+    <!-- Security Components -->
+    <component id="JWT_AUTHENTICATION_FILTER" kind="security" path="src/main/java/org/homework/security/JwtAuthenticationFilter.java">
+      <description>Фильтр для JWT аутентификации</description>
+      <role>Валидация JWT токена в каждом запросе</role>
+      <depends-on ref="JWT_TOKEN_PROVIDER"/>
+      <exposes>Фильтрацию запросов по JWT</exposes>
+      <consumes>JWT токены из заголовка Authorization</consumes>
+    </component>
+
+    <component id="JWT_TOKEN_PROVIDER" kind="security" path="src/main/java/org/homework/security/JwtTokenProvider.java">
+      <description>Провайдер JWT токенов</description>
+      <role>Генерация и валидация JWT токенов</role>
+      <exposes>Методы для работы с JWT</exposes>
+    </component>
+
+    <component id="SECURITY_CONFIG" kind="security" path="src/main/java/org/homework/security/SecurityConfig.java">
+      <description>Конфигурация Spring Security</description>
+      <role>Настройка правил доступа и фильтров</role>
+      <depends-on ref="JWT_AUTHENTICATION_FILTER"/>
+      <exposes>Конфигурацию безопасности</exposes>
+    </component>
+
+    <component id="CORS_CONFIG" kind="security" path="src/main/java/org/homework/security/CorsConfig.java">
+      <description>Конфигурация CORS</description>
+      <role>Разрешение кросс-доменных запросов</role>
+      <exposes>CORS настройки</exposes>
+    </component>
+
+    <!-- Database -->
+    <component id="POSTGRESQL_DB" kind="database" path="PostgreSQL 16">
+      <description>База данных PostgreSQL 16</description>
+      <technology>PostgreSQL 16, Liquibase</technology>
+      <role>Хранение данных приложения</role>
+      <exposes>Хранение пользователей, треков, заметок, прав доступа</exposes>
+      <consumes>SQL запросы от JPA репозиториев</consumes>
+    </component>
+
+    <!-- Exception Handling -->
+    <component id="GLOBAL_EXCEPTION_HANDLER" kind="infrastructure" path="src/main/java/org/homework/exception/GlobalExceptionHandler.java">
+      <description>Глобальный обработчик исключений</description>
+      <role>Единая обработка ошибок API</role>
+      <exposes>ErrorResponseDto для всех ошибок</exposes>
+      <consumes>Исключения из контроллеров и сервисов</consumes>
+    </component>
+
+    <!-- Data Models -->
+    <component id="USER_ENTITY" kind="model" path="src/main/java/org/homework/model/User.java">
+      <description>JPA сущность User</description>
+      <role>Модель пользователя</role>
+      <exposes>Поля: id, username, password, email, role, enabled</exposes>
+    </component>
+
+    <component id="TRACK_ENTITY" kind="model" path="src/main/java/org/homework/model/Track.java">
+      <description>JPA сущность Track</description>
+      <role>Модель трека развития</role>
+      <exposes>Поля: id, title, description, owner, createdAt, updatedAt</exposes>
+    </component>
+
+    <component id="NOTE_ENTITY" kind="model" path="src/main/java/org/homework/model/Note.java">
+      <description>JPA сущность Note</description>
+      <role>Модель заметки с иерархией</role>
+      <exposes>Поля: id, title, content, track, parent, order, createdAt, updatedAt</exposes>
+    </component>
+
+    <component id="TRACK_PERMISSION_ENTITY" kind="model" path="src/main/java/org/homework/model/TrackPermission.java">
+      <description>JPA сущность TrackPermission</description>
+      <role>Модель прав доступа к треку</role>
+      <exposes>Поля: id, track, user, permission (OWNER, EDIT, VIEW)</exposes>
+    </component>
+
+    <!-- DTOs -->
+    <component id="AUTH_REQUEST_DTO" kind="dto" path="src/main/java/org/homework/dto/request/AuthRequest.java">
+      <description>DTO для запроса аутентификации</description>
+      <role>Передача username и password</role>
+      <exposes>Поля: username, password</exposes>
+    </component>
+
+    <component id="REGISTER_REQUEST_DTO" kind="dto" path="src/main/java/org/homework/dto/request/RegisterRequest.java">
+      <description>DTO для запроса регистрации</description>
+      <role>Передача данных регистрации</role>
+      <exposes>Поля: username, password, email</exposes>
+    </component>
+
+    <component id="AUTH_RESPONSE_DTO" kind="dto" path="src/main/java/org/homework/dto/response/AuthResponse.java">
+      <description>DTO для ответа аутентификации</description>
+      <role>Передача токенов и данных пользователя</role>
+      <exposes>Поля: accessToken, refreshToken, user</exposes>
+    </component>
+
+    <component id="TRACK_DTO" kind="dto" path="src/main/java/org/homework/dto/response/TrackDto.java">
+      <description>DTO для трека</description>
+      <role>Передача данных трека</role>
+      <exposes>Поля: id, title, description, owner, createdAt, updatedAt</exposes>
+    </component>
+
+    <component id="NOTE_DTO" kind="dto" path="src/main/java/org/homework/dto/response/NoteDto.java">
+      <description>DTO для заметки</description>
+      <role>Передача данных заметки</role>
+      <exposes>Поля: id, title, content, trackId, parentId, order, createdAt, updatedAt</exposes>
+    </component>
+
+    <component id="USER_DTO" kind="dto" path="src/main/java/org/homework/dto/response/UserDto.java">
+      <description>DTO для пользователя</description>
+      <role>Передача данных пользователя</role>
+      <exposes>Поля: id, username, email, role, enabled</exposes>
+    </component>
+  </components>
+
+  <relationships>
+    <!-- Frontend to Backend -->
+    <edge id="FE_TO_BE_AUTH" from="AUTH_SERVICE_FRONTEND" to="AUTH_CONTROLLER" kind="http-rest">
+      <description>HTTP запросы для аутентификации и регистрации</description>
+    </edge>
+
+    <edge id="FE_TO_BE_TRACK" from="TRACK_SERVICE_FRONTEND" to="TRACK_CONTROLLER" kind="http-rest">
+      <description>HTTP запросы для управления треками</description>
+    </edge>
+
+    <edge id="FE_TO_BE_NOTE" from="NOTE_SERVICE_FRONTEND" to="NOTE_CONTROLLER" kind="http-rest">
+      <description>HTTP запросы для управления заметками</description>
+    </edge>
+
+    <edge id="FE_TO_BE_PERMISSION" from="TRACK_SERVICE_FRONTEND" to="PERMISSION_CONTROLLER" kind="http-rest">
+      <description>HTTP запросы для управления правами доступа</description>
+    </edge>
+
+    <edge id="FE_TO_BE_ADMIN" from="ADMIN_SERVICE_FRONTEND" to="ADMIN_CONTROLLER" kind="http-rest">
+      <description>HTTP запросы для административных функций</description>
+    </edge>
+
+    <!-- Backend Internal -->
+    <edge id="AUTH_CTRL_TO_SVC" from="AUTH_CONTROLLER" to="AUTH_SERVICE_BACKEND" kind="method-call">
+      <description>Вызов методов AuthService</description>
+    </edge>
+
+    <edge id="TRACK_CTRL_TO_SVC" from="TRACK_CONTROLLER" to="TRACK_SERVICE_BACKEND" kind="method-call">
+      <description>Вызов методов TrackService</description>
+    </edge>
+
+    <edge id="NOTE_CTRL_TO_SVC" from="NOTE_CONTROLLER" to="NOTE_SERVICE_BACKEND" kind="method-call">
+      <description>Вызов методов NoteService</description>
+    </edge>
+
+    <edge id="PERMISSION_CTRL_TO_SVC" from="PERMISSION_CONTROLLER" to="PERMISSION_SERVICE" kind="method-call">
+      <description>Вызов методов PermissionService</description>
+    </edge>
+
+    <edge id="TRACK_SVC_TO_PERMISSION" from="TRACK_SERVICE_BACKEND" to="PERMISSION_SERVICE" kind="method-call">
+      <description>Проверка прав доступа к треку</description>
+    </edge>
+
+    <edge id="NOTE_SVC_TO_PERMISSION" from="NOTE_SERVICE_BACKEND" to="PERMISSION_SERVICE" kind="method-call">
+      <description>Проверка прав доступа к заметке</description>
+    </edge>
+
+    <!-- Services to Repositories -->
+    <edge id="AUTH_SVC_TO_REPO" from="AUTH_SERVICE_BACKEND" to="USER_REPOSITORY" kind="jpa-query">
+      <description>Запросы к таблице users</description>
+    </edge>
+
+    <edge id="TRACK_SVC_TO_REPO" from="TRACK_SERVICE_BACKEND" to="TRACK_REPOSITORY" kind="jpa-query">
+      <description>Запросы к таблице tracks</description>
+    </edge>
+
+    <edge id="NOTE_SVC_TO_REPO" from="NOTE_SERVICE_BACKEND" to="NOTE_REPOSITORY" kind="jpa-query">
+      <description>Запросы к таблице notes</description>
+    </edge>
+
+    <edge id="PERMISSION_SVC_TO_REPO" from="PERMISSION_SERVICE" to="TRACK_PERMISSION_REPOSITORY" kind="jpa-query">
+      <description>Запросы к таблице track_permissions</description>
+    </edge>
+
+    <!-- Repositories to Database -->
+    <edge id="USER_REPO_TO_DB" from="USER_REPOSITORY" to="POSTGRESQL_DB" kind="sql">
+      <description>SQL запросы к таблице users</description>
+    </edge>
+
+    <edge id="TRACK_REPO_TO_DB" from="TRACK_REPOSITORY" to="POSTGRESQL_DB" kind="sql">
+      <description>SQL запросы к таблице tracks</description>
+    </edge>
+
+    <edge id="NOTE_REPO_TO_DB" from="NOTE_REPOSITORY" to="POSTGRESQL_DB" kind="sql">
+      <description>SQL запросы к таблице notes (с WITH RECURSIVE для иерархии)</description>
+    </edge>
+
+    <edge id="PERMISSION_REPO_TO_DB" from="TRACK_PERMISSION_REPOSITORY" to="POSTGRESQL_DB" kind="sql">
+      <description>SQL запросы к таблице track_permissions</description>
+    </edge>
+
+    <!-- Security Flow -->
+    <edge id="JWT_FILTER_TO_PROVIDER" from="JWT_AUTHENTICATION_FILTER" to="JWT_TOKEN_PROVIDER" kind="method-call">
+      <description>Валидация JWT токена</description>
+    </edge>
+
+    <edge id="AUTH_SVC_TO_JWT" from="AUTH_SERVICE_BACKEND" to="JWT_TOKEN_PROVIDER" kind="method-call">
+      <description>Генерация JWT токенов</description>
+    </edge>
+
+    <!-- Exception Handling -->
+    <edge id="EXCEPTIONS_TO_HANDLER" from="API_GATEWAY" to="GLOBAL_EXCEPTION_HANDLER" kind="exception">
+      <description>Перехват исключений из контроллеров</description>
+    </edge>
+  </relationships>
+
+  <data-flow>
+    <flow id="AUTH_FLOW" description="Поток аутентификации">
+      <step component="AUTH_SERVICE_FRONTEND" action="Отправка credentials"/>
+      <step component="AUTH_CONTROLLER" action="Принимает запрос"/>
+      <step component="AUTH_SERVICE_BACKEND" action="Валидация пользователя"/>
+      <step component="USER_REPOSITORY" action="Поиск пользователя"/>
+      <step component="POSTGRESQL_DB" action="Запрос к users"/>
+      <step component="JWT_TOKEN_PROVIDER" action="Генерация токенов"/>
+      <step component="AUTH_RESPONSE_DTO" action="Формирование ответа"/>
+      <step component="AUTH_SERVICE_FRONTEND" action="Сохранение токенов"/>
+    </flow>
+
+    <flow id="TRACK_FLOW" description="Поток работы с треками">
+      <step component="TRACK_SERVICE_FRONTEND" action="Отправка запроса"/>
+      <step component="JWT_AUTHENTICATION_FILTER" action="Валидация токена"/>
+      <step component="TRACK_CONTROLLER" action="Принимает запрос"/>
+      <step component="PERMISSION_SERVICE" action="Проверка прав"/>
+      <step component="TRACK_SERVICE_BACKEND" action="Бизнес-логика"/>
+      <step component="TRACK_REPOSITORY" action="CRUD операции"/>
+      <step component="POSTGRESQL_DB" action="Запрос к tracks"/>
+      <step component="TRACK_DTO" action="Формирование ответа"/>
+    </flow>
+
+    <flow id="NOTE_FLOW" description="Поток работы с заметками">
+      <step component="NOTE_SERVICE_FRONTEND" action="Отправка запроса"/>
+      <step component="JWT_AUTHENTICATION_FILTER" action="Валидация токена"/>
+      <step component="NOTE_CONTROLLER" action="Принимает запрос"/>
+      <step component="PERMISSION_SERVICE" action="Проверка прав"/>
+      <step component="NOTE_SERVICE_BACKEND" action="Бизнес-логика"/>
+      <step component="NOTE_REPOSITORY" action="CRUD операции"/>
+      <step component="POSTGRESQL_DB" action="Запрос к notes (WITH RECURSIVE)"/>
+      <step component="NOTE_DTO" action="Формирование ответа"/>
+    </flow>
+  </data-flow>
+
+  <decisions>
+    <decision id="ARCH_THREE_TIER" status="accepted">
+      <title>Трёхслойная архитектура</title>
+      <rationale>Разделение на Frontend (Angular), Backend (Spring Boot) и Database (PostgreSQL) обеспечивает масштабируемость, независимость разработки и простоту поддержки</rationale>
+    </decision>
+
+    <decision id="SEC_JWT_TOKENS" status="accepted">
+      <title>JWT токены для аутентификации</title>
+      <rationale>Stateless аутентификация, поддержка распределённых систем, отсутствие необходимости хранить сессии на сервере</rationale>
+    </decision>
+
+    <decision id="SEC_RBAC" status="accepted">
+      <title>Role-Based Access Control с правами на уровне трека</title>
+      <rationale>Гибкая система прав (OWNER, EDIT, VIEW) позволяет пользователям делиться треками с разным уровнем доступа</rationale>
+    </decision>
+
+    <decision id="DB_POSTGRESQL" status="accepted">
+      <title>PostgreSQL как СУБД</title>
+      <rationale>Поддержка рекурсивных запросов (WITH RECURSIVE) для иерархии заметок, надёжность, ACID транзакции</rationale>
+    </decision>
+
+    <decision id="DB_LIQUIBASE" status="accepted">
+      <title>Liquibase для миграций БД</title>
+      <rationale>Версионирование схемы БД, отслеживание изменений, поддержка разных окружений</rationale>
+    </decision>
+
+    <decision id="UI_PRIMENG" status="accepted">
+      <title>PrimeNG для UI компонентов</title>
+      <rationale>Готовые компоненты (p-table, p-tree, p-dialog), согласованность стиля, быстрая разработка</rationale>
+    </decision>
+
+    <decision id="API_REST" status="accepted">
+      <title>REST API для коммуникации</title>
+      <rationale>Стандартный подход, простота интеграции, поддержка всеми современными фреймворками</rationale>
+    </decision>
+
+    <decision id="SEC_CSRF_DISABLED" status="accepted">
+      <title>Отключение CSRF для API</title>
+      <rationale>Токен-базированная аутентификация (JWT) делает CSRF неактуальным для REST API</rationale>
+    </decision>
+
+    <decision id="LOG_STRUCTURED_JSON" status="accepted">
+      <title>Структурированное JSON логирование</title>
+      <rationale>Удобство парсинга, интеграция с системами мониторинга, AI-friendly формат</rationale>
+    </decision>
+
+    <decision id="TEST_TDD" status="accepted">
+      <title>TDD подход к тестированию</title>
+      <rationale>Высокое качество кода, документация через тесты, раннее обнаружение ошибок</rationale>
+    </decision>
+  </decisions>
+</semantic-graph>

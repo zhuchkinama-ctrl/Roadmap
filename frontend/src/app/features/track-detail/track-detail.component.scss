@@ -3,6 +3,92 @@
   max-width: 1600px;
   margin: 0 auto;
 
+  // Глобальное правило для note-expand-icon
+  .note-expand-icon {
+    color: #666 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-width: 0 !important;
+    border-style: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    line-height: 1 !important;
+    font-size: 12px !important;
+    font-weight: normal !important;
+    text-shadow: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  // Максимальная специфичность для span.note-expand-icon
+  span.note-expand-icon {
+    color: #666 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-width: 0 !important;
+    border-style: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    line-height: 1 !important;
+    font-size: 12px !important;
+    font-weight: normal !important;
+    text-shadow: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    /* Ensure plain text font to avoid icon font rendering */
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+  /* Reset styles for span used as expand icon without class */
+  .note-item-content span[aria-label] {
+    all: unset;
+    color: #666 !important;
+    font-size: 12px !important;
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
   .error-message {
     background-color: #fee;
     border: 1px solid #fcc;
@@ -234,22 +320,11 @@
           .note-item {
             margin-bottom: 4px;
 
-            &.selected {
-              .note-item-content {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-              }
-            }
-
             &.completed {
               .note-item-content {
                 .note-title {
                   text-decoration: line-through;
                   color: #999;
-                }
-
-                .note-icon {
-                  opacity: 0.5;
                 }
               }
             }
@@ -272,7 +347,7 @@
                 height: 18px;
                 cursor: pointer;
                 flex-shrink: 0;
-                accent-color: #667eea;
+                accent-color: #666;
                 transition: all 0.2s ease;
 
                 &:hover {
@@ -280,11 +355,61 @@
                 }
               }
 
-              .note-icon {
-                font-size: 16px;
+              .note-expand-icon {
+                font-size: 12px;
                 flex-shrink: 0;
+                cursor: pointer;
+                color: #666 !important;
+                transition: all 0.2s ease;
+                user-select: none;
+                width: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                outline: none;
+                text-decoration: none;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+
+                &:hover {
+                  transform: scale(1.1);
+                  color: #666 !important;
+                  background: transparent;
+                  box-shadow: none;
+                }
+
+                &:focus {
+                  outline: none;
+                  color: #666 !important;
+                  background: transparent;
+                  box-shadow: none;
+                }
+
+                &:active {
+                  color: #666 !important;
+                  background: transparent;
+                  box-shadow: none;
+                }
+
+                &:visited {
+                  color: #666 !important;
+                }
+
+                &:link {
+                  color: #666 !important;
+                }
               }
 
+              /* Reset any span used for expand icon without class */
+              .note-item-content span[aria-label] {
+                all: unset;
+                color: #666 !important;
+                font-size: 12px !important;
+                display: inline-block !important;
+                width: auto !important;
+                height: auto !important;
+              }
               .note-title {
                 flex: 1;
                 font-size: 14px;

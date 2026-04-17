@@ -49,6 +49,217 @@ a {
   }
 }
 
+/* Убираем синий цвет у note-expand-icon */
+.note-expand-icon {
+  color: #666 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  line-height: 1 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  text-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Псевдоэлементы */
+.note-expand-icon::before,
+.note-expand-icon::after {
+  content: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.note-expand-icon:hover,
+.note-expand-icon:focus,
+.note-expand-icon:active,
+.note-expand-icon:visited,
+.note-expand-icon:link {
+  color: #666 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  line-height: 1 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Псевдоэлементы при наведении */
+.note-expand-icon:hover::before,
+.note-expand-icon:hover::after,
+.note-expand-icon:focus::before,
+.note-expand-icon:focus::after,
+.note-expand-icon:active::before,
+.note-expand-icon:active::after {
+  content: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Убираем синий цвет при наведении на родительский элемент */
+.note-item-content:hover .note-expand-icon {
+  color: #666 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  line-height: 1 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Псевдоэлементы при наведении на родительский элемент */
+.note-item-content:hover .note-expand-icon::before,
+.note-item-content:hover .note-expand-icon::after {
+  content: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Убираем любые стили PrimeNG или других библиотек */
+p-button .note-expand-icon,
+.ui-button .note-expand-icon,
+button .note-expand-icon,
+.p-button .note-expand-icon,
+.ui-icon .note-expand-icon {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #666 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* Убираем стили для span внутри кнопок */
+button span.note-expand-icon,
+.p-button span.note-expand-icon,
+.ui-button span.note-expand-icon {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #666 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Максимальная специфичность для span.note-expand-icon */
+span.note-expand-icon {
+  color: #666 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  line-height: 1 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  text-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Псевдоэлементы для span.note-expand-icon */
+span.note-expand-icon::before,
+span.note-expand-icon::after {
+  content: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 /* Кнопки */
 button {
   font-family: inherit;
