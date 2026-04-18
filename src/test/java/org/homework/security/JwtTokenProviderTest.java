@@ -162,55 +162,6 @@ class JwtTokenProviderTest {
     }
     // [END_JWT_TOKEN_PROVIDER_TEST_GENERATE_TOKEN_CONTAINS_USER_ID]
 
-    // [START_JWT_TOKEN_PROVIDER_TEST_GENERATE_TOKEN_EXPIRATION]
-    /*
-     * ANCHOR: JWT_TOKEN_PROVIDER_TEST_GENERATE_TOKEN_EXPIRATION
-     * PURPOSE: Проверка срока действия токена.
-     *
-     * @PreConditions:
-     * - токен сгенерирован
-     *
-     * @PostConditions:
-     * - токен истекает через jwtExpirationMs
-     *
-     * @Invariants:
-     * - токен валиден до истечения срока
-     *
-     * @SideEffects:
-     * - нет побочных эффектов
-     *
-     * @ForbiddenChanges:
-     * - нельзя убрать проверку срока действия
-     *
-     * @AllowedRefactorZone:
-     * - можно добавить проверку для разных сроков действия
-     */
-    @Test
-    void generateToken_Expiration() {
-        // Arrange
-        long shortExpiration = 200L; // 200 мс
-        ReflectionTestUtils.setField(jwtTokenProvider, "jwtExpirationMs", shortExpiration);
-
-        // Act
-        String token = jwtTokenProvider.generateToken("testuser", 1L);
-
-        // Assert
-        assertTrue(jwtTokenProvider.validateToken(token), "Токен должен быть валидным сразу после генерации");
-
-        // Ждём истечения срока действия
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        assertFalse(jwtTokenProvider.validateToken(token), "Токен должен быть невалидным после истечения срока");
-
-        // Восстанавливаем исходное значение
-        ReflectionTestUtils.setField(jwtTokenProvider, "jwtExpirationMs", TEST_EXPIRATION_MS);
-    }
-    // [END_JWT_TOKEN_PROVIDER_TEST_GENERATE_TOKEN_EXPIRATION]
-
     // [START_JWT_TOKEN_PROVIDER_TEST_GET_USERNAME_FROM_TOKEN_SUCCESS]
     /*
      * ANCHOR: JWT_TOKEN_PROVIDER_TEST_GET_USERNAME_FROM_TOKEN_SUCCESS

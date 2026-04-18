@@ -1,11 +1,17 @@
 package org.homework.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 // === CHUNK: GLOBAL_EXCEPTION_HANDLER [EXCEPTION] ===
 // Описание: Глобальный обработчик исключений для REST API.
@@ -50,6 +56,51 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        log.error("GLOBAL_EXCEPTION_HANDLER ERROR - AuthenticationException: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse();
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.UNAUTHORIZED.value());
+        error.setError("Unauthorized");
+        error.setMessage(ex.getMessage());
+        error.setPath("/api/v1/auth/login");
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        log.error("GLOBAL_EXCEPTION_HANDLER ERROR - MethodArgumentNotValidException: validation failed");
+        
+        Map<String, String> validationErrors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            validationErrors.put(fieldName, errorMessage);
+        });
+
+        ErrorResponse error = new ErrorResponse();
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setError("Validation Error");
+        error.setMessage("Validation failed for request fields");
+        error.setPath("/api/v1/auth/register");
+        error.setValidationErrors(validationErrors);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+        log.error("GLOBAL_EXCEPTION_HANDLER ERROR - ConstraintViolationException: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse();
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setError("Validation Error");
+        error.setMessage(ex.getMessage());
+        error.setPath("/api/v1/auth");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         log.error("GLOBAL_EXCEPTION_HANDLER ERROR - Exception: {} - {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
@@ -82,6 +133,7 @@ class ErrorResponse {
     private String error;
     private String message;
     private String path;
+    private java.util.Map<String, String> validationErrors;
 
     // getters and setters
     public Instant getTimestamp() { return timestamp; }
@@ -94,4 +146,6 @@ class ErrorResponse {
     public void setMessage(String message) { this.message = message; }
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path; }
+    public java.util.Map<String, String> getValidationErrors() { return validationErrors; }
+    public void setValidationErrors(java.util.Map<String, String> validationErrors) { this.validationErrors = validationErrors; }
 }

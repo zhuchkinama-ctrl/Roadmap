@@ -74,28 +74,38 @@ public class JwtTokenProvider {
 
     public String getUsernameFromToken(String token) {
         log.debug("JWT_TOKEN_PROVIDER ENTRY - getUsernameFromToken");
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-        String username = claims.getSubject();
-        log.debug("JWT_TOKEN_PROVIDER EXIT - getUsernameFromToken - success - username: {}", username);
-        return username;
+            String username = claims.getSubject();
+            log.debug("JWT_TOKEN_PROVIDER EXIT - getUsernameFromToken - success - username: {}", username);
+            return username;
+        } catch (JwtException e) {
+            log.warn("JWT_TOKEN_PROVIDER ERROR - getUsernameFromToken - failed: {}", e.getMessage());
+            throw e;
+        }
     }
 
     public Long getUserIdFromToken(String token) {
         log.debug("JWT_TOKEN_PROVIDER ENTRY - getUserIdFromToken");
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-        Long userId = claims.get("userId", Long.class);
-        log.debug("JWT_TOKEN_PROVIDER EXIT - getUserIdFromToken - success - userId: {}", userId);
-        return userId;
+            Long userId = claims.get("userId", Long.class);
+            log.debug("JWT_TOKEN_PROVIDER EXIT - getUserIdFromToken - success - userId: {}", userId);
+            return userId;
+        } catch (JwtException e) {
+            log.warn("JWT_TOKEN_PROVIDER ERROR - getUserIdFromToken - failed: {}", e.getMessage());
+            throw e;
+        }
     }
 
     public boolean validateToken(String token) {
