@@ -14,6 +14,7 @@ import org.homework.dto.request.UpdateTrackRequest;
 import org.homework.dto.response.NoteDto;
 import org.homework.dto.response.NoteTreeDto;
 import org.homework.dto.response.TrackDto;
+import org.homework.dto.response.TrackSummaryDto;
 import org.homework.service.NoteService;
 import org.homework.service.TrackService;
 import org.springframework.data.domain.Page;
@@ -68,7 +69,7 @@ public class TrackController {
      * - возвращается 200 OK со списком треков
      *
      * @Invariants:
-     * - всегда возвращается Page<TrackDto>
+     * - всегда возвращается Page<TrackSummaryDto>
      *
      * @SideEffects:
      * - чтение треков из БД
@@ -80,13 +81,13 @@ public class TrackController {
      * - можно добавить дополнительные фильтры
      */
     @GetMapping
-    public ResponseEntity<Page<TrackDto>> getAll(
+    public ResponseEntity<Page<TrackSummaryDto>> getAll(
             Authentication authentication,
             Pageable pageable) {
         log.info("TRACK_CONTROLLER_GET_ALL ENTRY");
         
         Long userId = getUserIdFromAuthentication(authentication);
-        Page<TrackDto> tracks = trackService.getUserTracks(userId, pageable);
+        Page<TrackSummaryDto> tracks = trackService.getUserTracks(userId, pageable);
         
         log.info("TRACK_CONTROLLER_GET_ALL EXIT - found {} tracks", tracks.getTotalElements());
         return ResponseEntity.ok(tracks);

@@ -3,6 +3,7 @@ package org.homework.service;
 import org.homework.dto.request.CreateTrackRequest;
 import org.homework.dto.request.UpdateTrackRequest;
 import org.homework.dto.response.TrackDto;
+import org.homework.dto.response.TrackSummaryDto;
 import org.homework.dto.response.UserDto;
 import org.homework.exception.ResourceNotFoundException;
 import org.homework.model.Track;
@@ -152,7 +153,7 @@ class TrackServiceTest {
         when(permissionService.getUserRole(TRACK_ID, USER_ID)).thenReturn("OWNER");
 
         // Act
-        Page<TrackDto> result = trackService.getUserTracks(USER_ID, pageable);
+        Page<TrackSummaryDto> result = trackService.getUserTracks(USER_ID, pageable);
 
         // Assert
         assertNotNull(result, "Результат не должен быть null");
@@ -199,7 +200,7 @@ class TrackServiceTest {
         when(trackRepository.findAccessibleTracks(USER_ID, pageable)).thenReturn(accessibleTracks);
 
         // Act
-        Page<TrackDto> result = trackService.getUserTracks(USER_ID, pageable);
+        Page<TrackSummaryDto> result = trackService.getUserTracks(USER_ID, pageable);
 
         // Assert
         assertNotNull(result, "Результат не должен быть null");
@@ -264,7 +265,7 @@ class TrackServiceTest {
         when(permissionService.getUserRole(2L, USER_ID)).thenReturn("VIEW");
 
         // Act
-        Page<TrackDto> result = trackService.getUserTracks(USER_ID, pageable);
+        Page<TrackSummaryDto> result = trackService.getUserTracks(USER_ID, pageable);
 
         // Assert
         assertNotNull(result, "Результат не должен быть null");

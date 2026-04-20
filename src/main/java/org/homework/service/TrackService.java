@@ -1,4 +1,4 @@
-// === CHUNK: TRACK_SERVICE [SERVICE] ===
+    // === CHUNK: TRACK_SERVICE [SERVICE] ===
 // Описание: Сервис управления треками развития.
 // Dependencies: Spring
 
@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.homework.dto.request.CreateTrackRequest;
 import org.homework.dto.request.UpdateTrackRequest;
 import org.homework.dto.response.TrackDto;
+import org.homework.dto.response.TrackSummaryDto;
 import org.homework.dto.response.UserDto;
 import org.homework.exception.ResourceNotFoundException;
 import org.homework.model.Track;
@@ -63,7 +64,7 @@ public class TrackService {
     /**
      * Получить список треков пользователя (свои + доступные).
      */
-    public Page<TrackDto> getUserTracks(Long userId, Pageable pageable) {
+    public Page<TrackSummaryDto> getUserTracks(Long userId, Pageable pageable) {
         log.info("TRACK_SERVICE GET_USER_TRACKS ENTRY - userId: {}", userId);
         
         // Получаем треки пользователя
@@ -73,13 +74,13 @@ public class TrackService {
         Page<Track> accessibleTracks = trackRepository.findAccessibleTracks(userId, pageable);
         
         // Объединяем результаты (упрощенно - в реальном проекте нужно более сложное объединение)
-        List<TrackDto> allTracks = ownTracks.getContent().stream()
-                .map(track -> mapToTrackDto(track, userId))
+        List<TrackSummaryDto> allTracks = ownTracks.getContent().stream()
+                .map(track -> mapToTrackSummaryDto(track, userId))
                 .collect(Collectors.toList());
         
         allTracks.addAll(accessibleTracks.getContent().stream()
                 .filter(track -> !track.getOwner().getId().equals(userId))
-                .map(track -> mapToTrackDto(track, userId))
+                .map(track -> mapToTrackSummaryDto(track, userId))
                 .collect(Collectors.toList()));
         
         log.info("TRACK_SERVICE GET_USER_TRACKS EXIT - found {} tracks", allTracks.size());
@@ -210,6 +211,30 @@ public class TrackService {
                 .owner(ownerDto)
                 .myRole(myRole)
                 .createdAt(track.getCreatedAt())
+                .updatedAt(track.getUpdatedAt())
+                .build();
+    }
+    
+    /**
+     * Преобразовать Track в TrackSummaryDto.
+     */
+    private TrackSummaryDto mapToTrackSummaryDto(Track track, Long userId) {
+        UserDto ownerDto = UserDto.builder()
+                .id(track.getOwner().getId())
+                .username(track.getOwner().getUsername())
+                .role(track.getOwner().getRole())
+                .enabled(track.getOwner().getEnabled())
+                .createdAt(track.getOwner().getCreatedAt())
+                .build();
+        
+        String myRole = permissionService.getUserRole(track.getId(), userId);
+        
+        return TrackSummaryDto.builder()
+                .id(track.getId())
+                .title(track.getTitle())
+                .description(track.getDescription())
+                .owner(ownerDto)
+                .myRole(myRole)
                 .updatedAt(track.getUpdatedAt())
                 .build();
     }

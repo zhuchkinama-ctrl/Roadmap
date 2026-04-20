@@ -84,6 +84,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Spring Security Test -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- JJWT for JWT handling (modern version without JAXB dependency) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

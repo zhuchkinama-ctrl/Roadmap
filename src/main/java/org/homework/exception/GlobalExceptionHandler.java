@@ -100,7 +100,19 @@ public class GlobalExceptionHandler {
         error.setPath("/api/v1/auth");
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-
+    
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.error("GLOBAL_EXCEPTION_HANDLER ERROR - ResourceNotFoundException: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse();
+        error.setTimestamp(Instant.now());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setError("Not Found");
+        error.setMessage(ex.getMessage());
+        error.setPath("/api/v1");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         log.error("GLOBAL_EXCEPTION_HANDLER ERROR - Exception: {} - {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
